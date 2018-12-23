@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="John Doe">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="John Doe">
+    
+    <meta name="keywords" content="skydownacai,machine learing,机器学习,个人博客,数学,math">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>SVM[一]:最大间隔分离超平面与线性可分支持向量机 · Repository of skydownacai</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/small.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin="">
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin="">
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">Skydownacai</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">SVM[一]:最大间隔分离超平面与线性可分支持向量机</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">Skydownacai</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            SVM[一]:最大间隔分离超平面与线性可分支持向量机
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="函数间隔与几何间隔">函数间隔与几何间隔</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="线性可分支持向量机">线性可分支持向量机</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="支持向量机">支持向量机</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2.8k</span>阅读时长: <span class="post-count reading-time">10 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/12/23</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <a id="more"></a> 
+<h1 id="一-一些线性代数的基础知识"><a href="#一-一些线性代数的基础知识" class="headerlink" title="一.  一些线性代数的基础知识"></a>一.  一些线性代数的基础知识</h1><h3 id="1-什么是超平面-Hyperplane-？"><a href="#1-什么是超平面-Hyperplane-？" class="headerlink" title="1.什么是超平面(Hyperplane)？"></a>1.什么是超平面(Hyperplane)？</h3><p>​          实际上，如果不考虑超平面的完全定义，单靠直觉，其实很简单。想象一个空间，什么样的东西能够将一个空间分为两部分？</p>
+<h5 id="1-在一维空间，也就是一条直线中-任意一个点可以将这一条直线分为两部分"><a href="#1-在一维空间，也就是一条直线中-任意一个点可以将这一条直线分为两部分" class="headerlink" title="1.在一维空间，也就是一条直线中,任意一个点可以将这一条直线分为两部分:"></a>1.在一维空间，也就是一条直线中,任意一个点可以将这一条直线分为两部分:</h5><p><img src="/2018/12/23/SVM1/一维.png" alt="一维情况"></p>
+<script type="math/tex; mode=display">
+一维超平面 \\x_1 + c = 0 \\
+\Leftrightarrow a_1x_1 + b =0 \ \ \ \ \ \ \ \ \</script><h5 id="2-在二维空间中，也就是我们的直角坐标系中，任意一条直线可以将二维空间分为两部分"><a href="#2-在二维空间中，也就是我们的直角坐标系中，任意一条直线可以将二维空间分为两部分" class="headerlink" title="2.在二维空间中，也就是我们的直角坐标系中，任意一条直线可以将二维空间分为两部分:"></a>2.在二维空间中，也就是我们的直角坐标系中，任意一条直线可以将二维空间分为两部分:</h5><p>​                                                         <img src="/2018/12/23/SVM1/二维.png" alt="二维"> </p>
+<script type="math/tex; mode=display">
+二维超平面 \\a_1x_1+a_2x_2 +  b = 0\\</script><h5 id="3-在三维空间中，任意一个平面可以将三维空间分为两部分"><a href="#3-在三维空间中，任意一个平面可以将三维空间分为两部分" class="headerlink" title="3.在三维空间中，任意一个平面可以将三维空间分为两部分:"></a>3.在三维空间中，任意一个平面可以将三维空间分为两部分:</h5><p><img src="/2018/12/23/SVM1/三维.png" alt="三维"></p>
+<script type="math/tex; mode=display">
+三维超平面 \\a_1x_1+a_2x_2+a_3x_3 + b = 0\\</script><h5 id="4-对于n维空间呢？"><a href="#4-对于n维空间呢？" class="headerlink" title="4.对于n维空间呢？"></a>4.对于n维空间呢？</h5><p>​                       如果我们以此类推可以发现n维空间超平面有以下数学定义:</p>
+<script type="math/tex; mode=display">
+a_1x_1+a_2x_2+a_3x_3+...+a_nx_n +  b = 0\\
+如果我们令 w=(a_1,...,a_n)^T\  x=(x_1,...,x_n)^T \ \ 上式可以表述成:\\
+    w^Tx + b= 0\\而w实际上就是超平面的法向量\\ \ \  \  那么如果一点在超平面上方必有：w^Tx+b> 0 \\ \ \ \ 那么如果一点在超平面上必有\ \ \  \ ： w^Tx+b=0 \\ \ \ \ 那么如果一点在超平面下方必有：w^Tx+b< 0\\ \ \  \ \ \  注:这里的上方是指法向量方向所指部分</script><p>​                      如果一个空间是n维，那么超平面就是n-1维度！</p>
+<h3 id="2-n维空间中一个点到超平面的距离（几何间隔）是什么"><a href="#2-n维空间中一个点到超平面的距离（几何间隔）是什么" class="headerlink" title="2. n维空间中一个点到超平面的距离（几何间隔）是什么?"></a>2. n维空间中一个点到超平面的距离（几何间隔）是什么?</h3><p>​                   <img src="/2018/12/23/SVM1/超平面距离.png" alt="超平面距离"></p>
+<p>​                                </p>
+<script type="math/tex; mode=display">
+如何求空间一点A到超平面的几何距离？</script><p>​                 实际上，空间中一个点到超平面的距离也被称为几何间隔，几何间隔越大，点A距离超平面也就越远。</p>
+<p>那么如何求一个点到超平面的距离呢？</p>
+<p>​                方法一:                 </p>
+<p>​                    回忆我们如何求一个点到线段的距离。点A到线段的距离是A与它在这条线段上投影点的距离。同样                     在n维 空间中点A到一个超平面的距离是A与到超平面的投影点的距离。所以我们可以把投影点求出来，从而求出A到超平面的距离。</p>
+<script type="math/tex; mode=display">
+设x_0为A在超平面上的投影点。那么由超平面的定义，我们有:\\w^Tx_0+b=0\\那么A点到超平面的距离=||x-x_0||_2\\注意到x-x_0与超平面垂直\\ \therefore x-x_0 = k \cdot w(k是某个实数) \\ \therefore x_0 =x-k\cdot w\\ \therefore w^T(x-k \cdot w) +b =0\\ \Leftrightarrow k\cdot ||w||^2 = w^Tx+b \\ \therefore d= ||x-x_0|| =||k \cdot w||=|k|\cdot||w||=\frac{|k\cdot ||w||^2 |}{||w||} =\frac{|w^Tx+b|}{||w||}</script><p>​              方法二:                 </p>
+<p>​                  从另一个角度想，点A到超平面的距离，实际上就是点A到超平面上任意一点的向量在法向量上的投影值 </p>
+<p>​                                </p>
+<script type="math/tex; mode=display">
+设x_0为超平面上任意一点，那么\\d=\frac{|w^T(x-x_0)|}{||w||}=\frac{|w^Tx-w^Tx_0|}{||w||}=\frac{|w^Tx-(0-b)|}{||w||}=\frac{|w^Tx+b|}{||w||}</script><h1 id="二-从实际问题出发，如何分类两类标签数据？"><a href="#二-从实际问题出发，如何分类两类标签数据？" class="headerlink" title="二.从实际问题出发，如何分类两类标签数据？"></a>二.从实际问题出发，如何分类两类标签数据？</h1><p><img src="/2018/12/23/SVM1/1.png" alt="一些二维数据分布，红色为正标签，黑色为负标签"></p>
+<p>​                                           </p>
+<h3 id="1-如果我们要训练一个分类器，成功的将图中数据分开，我们可以怎么做？"><a href="#1-如果我们要训练一个分类器，成功的将图中数据分开，我们可以怎么做？" class="headerlink" title="1.如果我们要训练一个分类器，成功的将图中数据分开，我们可以怎么做？"></a>1.如果我们要训练一个分类器，成功的将图中数据分开，我们可以怎么做？</h3><p>​                 实际上，如果要将类似图中数据分割开的，一种很直觉的做法就是一个超平面将他们分开。那么我们的分类器就是这个超平面，我们要训练的，就是要找到这个最佳的超平面</p>
+<h3 id="2-什么是最佳的超平面-——-间隔最大化"><a href="#2-什么是最佳的超平面-——-间隔最大化" class="headerlink" title="2.什么是最佳的超平面 ? ——-间隔最大化"></a>2.什么是最佳的超平面 ? ——-间隔最大化</h3><p>​                 机器学习的目的不仅在于使得模型对于训练数据具有十分好的拟合能力，更在于对于未知数据有更好的泛化能力。机器学习的目的在于预测与推断。</p>
+<p>​                对于图中的数据，实际上是可以存在很多个超平面将他们分开的，但是如果我们希望找到一个最佳的超平面，那么这个超平面应该使得所有的数据点被正确的分类，数据点到超平面的距离更远。那么我们的分类器就具有更强的泛化能力，这样的超平面就是我们所希望的超平面</p>
+<h3 id="3-如何数学模型化我们的最佳超平面-——线性可分支持向量机"><a href="#3-如何数学模型化我们的最佳超平面-——线性可分支持向量机" class="headerlink" title="3.如何数学模型化我们的最佳超平面 ——线性可分支持向量机:"></a>3.如何数学模型化我们的最佳超平面 ——线性可分支持向量机:</h3><p>​            1.首先我们考虑正确的分类我们的数据(假设样本集有m个)，并且使得最小间隔最大化</p>
+<p>​                               </p>
+<script type="math/tex; mode=display">
+对于每个数据点x，其标签为+1或-1\\那么我们希望对于找到的最佳分隔超平面，数据点与该超平面最小间隔是所有正确分类的超平面里面最大的\\设对于某个具体的超平面:w^Tx+b=0\\若数据点x_i标签值为+1,我们希望有w^Tx_i+b \geq 0\\若数据点xi标签值为-1,我们希望有w^Tx_i+b \leq0 \\那么一个数据点x_0若被正确的分类，那么必有:y_i(w^Tx_i+b)\geq 0\\同时我们设所有数据点与超平面最小间隔为k\\那么对于所有的数据点必有:\frac{:|w^Tx_i+b|}{||w||} \geq k\\ 结合两式,对于我们的最佳超平面,必有：\\ \frac{y_i(w^Tx_i+b)}{||w||} \geq k
+\\那么我们的数学模型可以写为:\\maximize:k \\st: \frac{y(w^Tx_i+b)}{||w||}\geq k \Leftrightarrow  y_i(w^Tx_i+b) \geq k\cdot||w||  \ \ {\forall} i =1,....m</script><p>​           2.注意到 如果我们使 w 与 b 同时增长相同倍数，我们的超平面并没有改变， 我们的限制条件也并没有改变 </p>
+<script type="math/tex; mode=display">
+鉴于此,我们不妨令||w||在任何一个k值下都有k\cdot||w|| = 1\\这样一来我们的约束条件变得简化. 所以我们的数学模型可以改为:\\maximize: \frac{1}{||w||} \\\\ \quad \qquad \qquad  \ \ \ \ \ \ \ \ \ \ \ st:y_i(w^Tx_i+b)\geq 1 \ \ \ \ \ \ {\forall} i =1,....m</script><p>​         2.注意到这是一个分式，不太好优化。但是注意到最大化它等价于最小化它的倒数</p>
+<script type="math/tex; mode=display">
+minimize: ||w|| \\ \quad \qquad \qquad  \ \ \ \ \ \ \ \ \ \ \ st:y_i(w^Tx_i+b)\geq 1 \ \ \ \ \ \ {\forall} i =1,....m</script><p>​        3.注意w的模恒大于0，那么我们可以将目标函数改为它的二次项。从而变成二次规划</p>
+<script type="math/tex; mode=display">
+minimize: \frac{||w||^2}{2} \\ \quad \qquad \qquad  \ \ \ \ \ \ \ \ \ \ \ st:y_i(w^Tx_i+b)\geq 1 \ \ \ \ \ \ {\forall} i =1,....m</script><p>​           到这里，这就是我们我们的线性可分支持向量机的数学模型。也就是我们的间隔最大化模型。那么，如果我们反过来看这个模型，这个模型实际上是三个超平面:</p>
+<p><img src="/2018/12/23/SVM1/线性可分支持向量机.png" alt="线性可分支持向量机"></p>
+<p>​                                           </p>
+<script type="math/tex; mode=display">
+如果线性可分支持向量机正确的分类了所有的数据:\\如果数据点标签为+1,那么它在超平面:w^Tx+b=1的上方\\如果数据点标签为-1,那么它在超平面:w^Tx+b=-1的下方\\两个超平面之间的间隔为\frac{2}{||w||} \\我们的线性可分支持向量机，正是寻找这样的超平面\\同时使得绿蓝两个超平面之间的间隔尽可能的大，从而使得具有更强的泛化能力。\\并且如果我们的数据是线性可分的，那么这样的超平面一定是存在且唯一</script><h3 id="4-回到起点，什么是支持向量机"><a href="#4-回到起点，什么是支持向量机" class="headerlink" title="4.回到起点，什么是支持向量机:"></a>4.回到起点，什么是支持向量机:</h3><p>​                    实际上，我们在上面推导的数学模型就是一个线性可分支持向量机。那么什么是支持向量呢？其实支持向量这个概念体现在求解数学模型的过程中。后面我们会讲到。根据kkt条件，超平面法向量w实际上是由那些满足kkt条件，正好在绿蓝两个边界超平面的样本的数据值决定的。而这些在边界超平面的样本就是我们所说的支持向量。至于怎么体现,后面会谈到.</p>
+<h1 id="三-如何求解数学模型——-对偶函数-与KKT条件"><a href="#三-如何求解数学模型——-对偶函数-与KKT条件" class="headerlink" title="三. 如何求解数学模型——- 对偶函数 与KKT条件"></a>三. 如何求解数学模型——- 对偶函数 与KKT条件</h1><h3 id="1-什么是拉格朗日乘子法与-对偶问题-与kkt条件"><a href="#1-什么是拉格朗日乘子法与-对偶问题-与kkt条件" class="headerlink" title="1.什么是拉格朗日乘子法与 对偶问题 与kkt条件:"></a>1.什么是拉格朗日乘子法与 对偶问题 与kkt条件:</h3><p>​                首先百度一下标题中三个概念: <strong><em>[拉格朗日乘子法], [对偶问题],[kkt条件]</em></strong>  。这里我不会讲。</p>
+<p>​                对于带约束条件的原问题(Primal) ，如果不方便求的话，我们可以通过求处原问题的对偶问题(dual)来求解，因为对于一些模型来说，求解对偶问题更容易，并且对偶问题可能具有一些更优良的性质。而这里我们的线性可分支持向量机的训练，正是基于对偶问题。</p>
+<script type="math/tex; mode=display">
+weak \ \ \ duality:\ \ d^* \leq p^*\\d^*:the\ \ optimal \ \ cost \ \ of  \ \ dual \ \ problem \\ \ \ \ \ p^*:the\ \ optimal \ \ cost \ \ of  \ \ primal \ \ problem</script><p>​                弱对偶性保证了对偶问题的最优值总是小于等于原问题。也就是说对偶问题为原问题提供了一个下界。更为直觉的，在推导对偶问题时，其实我们的思路便是通过拉格朗日乘子法，将带约束条件的数学模型写作无约束的数学模型，得到原问题的一个下界。而对偶问题正是最大化这个下界。那么除了弱对偶性，我们还有强对偶性:</p>
+<script type="math/tex; mode=display">
+strong\ \ duality: d^* = p^*</script><p>​                强对偶性保证了对偶问题的最优值与原问题的最优值相等。 满足slater conditon 可以有 strong duality 成立。同时满足kkt 条件 也可以有 strong duality 成立</p>
+<h3 id="2-线性可分支持向量机的对偶问题"><a href="#2-线性可分支持向量机的对偶问题" class="headerlink" title="2.线性可分支持向量机的对偶问题:"></a>2.线性可分支持向量机的对偶问题:</h3><p>​               基于以上我们对偶问题的分析，我们可以通过求出我们模型的对偶问题，并且使得kkt条件成立，从而得到原问题的最优值</p>
+<script type="math/tex; mode=display">
+primal :\ \ \ \ \ \ \ \ \ \ \ \ minimize: \frac{||w||^2}{2}  \qquad \qquad \qquad\\ \quad\quad\quad\quad\quad\quad \qquad \qquad \ \ \ \ \ \ \ st:y_i(w^Tx_i+b)\geq 1 \ \ \ \ \ \ {\forall} i =1,....m  \qquad \qquad \qquad\\ Lagrange \ \ function:L(\alpha) = inf \left\{\frac{||w||^2 }{2} +\sum^m_{i=1}\alpha_i\cdot(1-y_i(w^Tx_i+b))\right\} \\ 令\frac{\partial L  }{\partial w}= 0  \Leftrightarrow w - \sum_{i=1}^ m\alpha_i y_ix_i=0 \Leftrightarrow w =\sum_{i=1}^ m\alpha_i y_ix_i \\ 令\frac{\partial L  }{\partial b}=0 \Leftrightarrow \sum_{i=1}^ m\alpha_i y_i=0 \\ {\therefore}L(\alpha) =\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^ m\sum_{i=1}^ m\alpha_i\alpha_i y_iy_jx_i^Tx_j \\  \qquad \qquad \qquad \qquad \qquad \qquad</script><p>​          所以我们最后的对偶数学模型为:</p>
+<script type="math/tex; mode=display">
+maximize: \sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^ m\sum_{i=1}^ m\alpha_i\alpha_i y_iy_jx_i^Tx_j \\ \ \ \quad s.t:\sum_{i=1}^ m\alpha_i y_i=0  \ \ \ \ {\forall} i =1,....m\\同时为了满足kkt条件必有:\alpha_i(1-y_i(w^Tx_i+b) =0  \ \ \ {\forall} i =1,....m</script><h3 id="3-如何求解对偶问题？———-SMO算法"><a href="#3-如何求解对偶问题？———-SMO算法" class="headerlink" title="3.如何求解对偶问题？———-SMO算法:"></a>3.如何求解对偶问题？———-SMO算法:</h3><p>​             我们的线性可分支持向量机是建立在数据一定线性可分的基础上。 也就是我们的数据被边界超平面正确的分离，也就是硬间隔。但是如果数据本身并非完全线性可分呢？我们允许部分数据在边界超平面以内，甚至被错误的分类，也就是软间隔，我们的线性支持向量机模型。对于线性可分支持向量机与线性支持向量机，都可以用SMO算法解决，不同的是在优化拉格朗日乘子时，约束边界不同。至于数学原理与代码实现，下期再更。要考试了，先忙完考试再说。</p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2018/12/23/写在首页/" title="写在首页：用这个博客记录自己的学习历程">
+                    <div class="nextTitle">写在首页：用这个博客记录自己的学习历程</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+<div id="container"></div>
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script> 
+<script>
+    var gitment = new Gitment({
+        // id:  md5(window.location.pathname), // 可选。默认为 location.href
+        owner: 'skydownacai',
+        repo: 'comments',
+        oauth: {
+            client_id: 'ba32b9111050e797f1c9',
+            client_secret: '23c7772fced9840165a3e588cb81134928c56355',
+        },
+    })
+    gitment.render('container')
+
+</script>
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:932997367@qq.com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/skydownacai" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title="wechat">
+                  
+                  <img class="profile-qr" src="/assets/qr.png">
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-一些线性代数的基础知识"><span class="toc-number">1.</span> <span class="toc-text">一.  一些线性代数的基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-什么是超平面-Hyperplane-？"><span class="toc-number">1.0.1.</span> <span class="toc-text">1.什么是超平面(Hyperplane)？</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-在一维空间，也就是一条直线中-任意一个点可以将这一条直线分为两部分"><span class="toc-number">1.0.1.0.1.</span> <span class="toc-text">1.在一维空间，也就是一条直线中,任意一个点可以将这一条直线分为两部分:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-在二维空间中，也就是我们的直角坐标系中，任意一条直线可以将二维空间分为两部分"><span class="toc-number">1.0.1.0.2.</span> <span class="toc-text">2.在二维空间中，也就是我们的直角坐标系中，任意一条直线可以将二维空间分为两部分:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-在三维空间中，任意一个平面可以将三维空间分为两部分"><span class="toc-number">1.0.1.0.3.</span> <span class="toc-text">3.在三维空间中，任意一个平面可以将三维空间分为两部分:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-对于n维空间呢？"><span class="toc-number">1.0.1.0.4.</span> <span class="toc-text">4.对于n维空间呢？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-n维空间中一个点到超平面的距离（几何间隔）是什么"><span class="toc-number">1.0.2.</span> <span class="toc-text">2. n维空间中一个点到超平面的距离（几何间隔）是什么?</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-从实际问题出发，如何分类两类标签数据？"><span class="toc-number">2.</span> <span class="toc-text">二.从实际问题出发，如何分类两类标签数据？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-如果我们要训练一个分类器，成功的将图中数据分开，我们可以怎么做？"><span class="toc-number">2.0.1.</span> <span class="toc-text">1.如果我们要训练一个分类器，成功的将图中数据分开，我们可以怎么做？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-什么是最佳的超平面-——-间隔最大化"><span class="toc-number">2.0.2.</span> <span class="toc-text">2.什么是最佳的超平面 ? ——-间隔最大化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-如何数学模型化我们的最佳超平面-——线性可分支持向量机"><span class="toc-number">2.0.3.</span> <span class="toc-text">3.如何数学模型化我们的最佳超平面 ——线性可分支持向量机:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-回到起点，什么是支持向量机"><span class="toc-number">2.0.4.</span> <span class="toc-text">4.回到起点，什么是支持向量机:</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-如何求解数学模型——-对偶函数-与KKT条件"><span class="toc-number">3.</span> <span class="toc-text">三. 如何求解数学模型——- 对偶函数 与KKT条件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-什么是拉格朗日乘子法与-对偶问题-与kkt条件"><span class="toc-number">3.0.1.</span> <span class="toc-text">1.什么是拉格朗日乘子法与 对偶问题 与kkt条件:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-线性可分支持向量机的对偶问题"><span class="toc-number">3.0.2.</span> <span class="toc-text">2.线性可分支持向量机的对偶问题:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-如何求解对偶问题？———-SMO算法"><span class="toc-number">3.0.3.</span> <span class="toc-text">3.如何求解对偶问题？———-SMO算法:</span></a></li></ol></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 2
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href="/2018/12/23/SVM1/">SVM[一]:最大间隔分离超平面与线性可分支持向量机</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href="/2018/12/23/写在首页/">写在首页：用这个博客记录自己的学习历程</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="myself"><span class="iconfont-archer">&#xe606;</span>myself</span>
+    
+        <span class="sidebar-tag-name" data-tags="sufe"><span class="iconfont-archer">&#xe606;</span>sufe</span>
+    
+        <span class="sidebar-tag-name" data-tags="函数间隔与几何间隔"><span class="iconfont-archer">&#xe606;</span>函数间隔与几何间隔</span>
+    
+        <span class="sidebar-tag-name" data-tags="线性可分支持向量机"><span class="iconfont-archer">&#xe606;</span>线性可分支持向量机</span>
+    
+        <span class="sidebar-tag-name" data-tags="支持向量机"><span class="iconfont-archer">&#xe606;</span>支持向量机</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="MYSELF"><span class="iconfont-archer">&#xe60a;</span>MYSELF</span>
+    
+        <span class="sidebar-category-name" data-categories="SVM"><span class="iconfont-archer">&#xe60a;</span>SVM</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "John Doe"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
+
+
