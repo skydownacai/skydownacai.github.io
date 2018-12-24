@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="John Doe">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="John Doe">
+    
+    <meta name="keywords" content="skydownacai,machine learing,机器学习,个人博客,数学,math">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>bp算法与手写数字识别代码 · Repository of skydownacai</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/small.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin="">
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin="">
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">Skydownacai</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">bp算法与手写数字识别代码</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">Skydownacai</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            bp算法与手写数字识别代码
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="神经网络">神经网络</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="bp算法">bp算法</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="手写数字识别">手写数字识别</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">5.6k</span>阅读时长: <span class="post-count reading-time">26 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/12/24</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h1 id="一-神经网络的结构与理解"><a href="#一-神经网络的结构与理解" class="headerlink" title="一.神经网络的结构与理解"></a>一.神经网络的结构与理解</h1><p>​       <img src="/2018/12/24/bp神经网络与识别手写数字实例/结构.png" alt="结构"></p>
+<script type="math/tex; mode=display">
+一个具有典型三层结构的神经网络，分别是一层输入层，一层隐藏层，一层输出层</script><p>​          实际上，这只是神经网络的结构一种结构，很多时候隐藏层往往不只是一层。</p>
+<p>​        就我的理解，神经网络实际上是通过隐藏层来提取特征，理论上隐藏层越多，或者隐藏层神经元个数越多，可以以任意精度逼近一个函数。 如果没有隐藏层，输入层只有两个单元，输出层只有一个输出。那么此时的神经网络就是个简单的感知机，可以实现简单的 线性划分 或者异或问题。  神经元每个单元接受的输入 都是上一层神经单元输出的线性组合。通过激活函数来输出， 以实现从线性划分到非线性的转变。如果把神经网络最后一层输出层的值作为函数值的话，神经网络本质上就是一个关于关于权重weight 与 阀值 threhold 的 函数 。 在监督式学习中，给定样本期望的输出值，让机器学习，不断更新网络中的weight 与 threhold ，使得 神经网络的输出 不断逼近我们的 期望值，降低误差。从而最后达到分类与预测的功能。</p>
+<h1 id="二-bp算法的本质与学习率的选择"><a href="#二-bp算法的本质与学习率的选择" class="headerlink" title="二.bp算法的本质与学习率的选择"></a>二.bp算法的本质与学习率的选择</h1><p>​            bp算法本质上便是梯度下降。通过损失函数，计算出输出层每个神经元的误差，让误差反向传播到神经网络的各层，让每个权重 与 阀值 按照 负梯度方向 更新 ，从而使得我们的神经元输出误差更小。</p>
+<p>​            </p>
+<script type="math/tex; mode=display">
+如果我们用L(y)来代指我们的损失函数，y是神经网络的输出\\我们知道神经网络的输出实质上是一个关于权重与阀值的函数，那么我们令权重为w,阀值为\beta\\那么可以得到y=f(w,\beta)\\所以我们的损失函数实质上为:L=L(f(w,\beta)) 也是一个关于权重与阀值的函数\\那么按照高等数学的理论，梯度方向是函数值上升最快的方向，那么负梯度方向便是函数值下降最快的方向\\所以取\triangle w =-\bigtriangledown_wL\cdot k_1,\triangle \beta =-\bigtriangledown_{\beta}L\cdot k_2 可以使得我们的函数值下降的最快。这里k_1,k_2是步长\\注意梯度方向是针对某一点极小区间而言的，那么这里的步长k_1,k_2理论上应该是无穷小，才能使得函数值精确下降\\但此时会使得我们的效率十分的低下，这里的步长用学习率n_1,n_2来代指\\如果学习率过高，很容易函数在参数空间中略过极小值点，学习率过低，使得效率十分低下。\\所以学习率的选择应该在两者之间平衡,至于具体选择要根据实际任务来看</script><h1 id="三-bp算法更新公式推导："><a href="#三-bp算法更新公式推导：" class="headerlink" title="三.bp算法更新公式推导："></a>三.bp算法更新公式推导：</h1><h4 id="1-符号与约定"><a href="#1-符号与约定" class="headerlink" title="1. 符号与约定"></a>1. 符号与约定</h4><script type="math/tex; mode=display">
+bp算法推导最麻烦的就是眼花缭乱的上下标，所以为了推导出更新公式首先作好简单明了的符号约定\\神经网络一共有n+1层,分别约定为第0-第n层。其中第0层为输入层，第n层为输出层 \\q_k表示第k层神经元的数量\\w^{[k]}_{ji}:k层第j个神经元与k-1层第i个神经元相连的权重\\\beta^{[k]}_j:k层第j个神经元的偏置\\b_j^{[k]}:k层第j个神经元的输出 \ \ 其中:b_j^{[0]}=x_j\\I^{[k]}_j=\sum^{q_{k-1}}_{i=1}w^{[k]}_{ji}b^{[k-1]}_{i}+\beta^{[k]}_j :k层第i个神经元的输入 \ （k\geq1) \\ b_j^{[k]}=\delta(I^{[k]}_j):\delta是该神经元对应的激活函数 \\L:损失函数\\g^{[k]}_j:损失函数对k层j神经单元输入值的偏导数 即:g^{[k]}_j = \frac{\partial L}{\partial I^{[k]}_j }\\n:学习率 \\ y_i^*是样本的真实输出值第i个分量,y_i是神经网络输出值,即y_i=b^{[n]}_i</script><p>​         </p>
+<h4 id="2-更新公式"><a href="#2-更新公式" class="headerlink" title="2.更新公式:"></a>2.更新公式:</h4><script type="math/tex; mode=display">
+w^{[k]}_{ji} \rightarrow w^{[k]}_{ji} + \triangle w^{[k]}_{ji} \\ \beta^{[k]}_j \rightarrow \beta^{[k]}_{j} + \triangle \beta^{[k]}_{j}\\ \triangle w^{[k]}_{ji}=-\frac{\partial L}{\partial w^{[k]}_{ji} } \cdot n \\ \triangle \beta^{[k]}_{j} = -\frac{\partial L}{\partial \beta^{[k]}_{j} } \cdot n</script><p>注意到，权重与阀值的变动值实际上是误差函数L对其的偏导数乘以学习率。那我们关键是如何求出对应的偏导数。注意到导数的定义实际上是自变量改变使得函数值改变的变动率。那么对于每一个权重或阀值，首先影响到的是该权重或阀值所在的输入，那么我们如果计算出误差函数对其输入的偏导数 ，再乘以 该输入 对对应权重或阀值的 偏导数，便可以得到误差函数对其的偏导数，也就是:</p>
+<script type="math/tex; mode=display">
+\frac{\partial L}{\partial w^{[k]}_{ji} }=\frac{\partial L}{\partial I^{[k]}_{j} }\cdot\frac{\partial I^{[k]}_{j} }{\partial w^{[k]}_{ji} } = g^{[k]}_j\cdot b^{[k-1]}_i \\\frac{\partial L}{\partial  \beta^{[k]}_{j} }=\frac{\partial L}{\partial I^{[k]}_{j} }\cdot\frac{\partial I^{[k]}_{j} }{\partial  \beta^{[k]}_{j} } = g^{[k]}_j \qquad \quad \\</script><h4 id="3-具体计算"><a href="#3-具体计算" class="headerlink" title="3.具体计算"></a>3.具体计算</h4><p>   可以看出，计算的关键，在于求出误差函数对某层神经元输入的导数。</p>
+<script type="math/tex; mode=display">
+不妨令L=\frac{1}{2}MSE =\frac{1}{2}\sum^{q_n}_{i=1}(y_i-y_i^*) ^2，不妨令所有的神经元激活函数\delta = sigmod()</script><p>  a.首先计算输出层误差函数L对神经元输入的导数:</p>
+<script type="math/tex; mode=display">
+   g^{[n]}_j = \frac{\partial L}{\partial I^{[n]}_{j} }=\frac{\partial L}{\partial b^{[n]}_{j} }\cdot \frac{\partial b^{[n]}_{j}}{\partial I^{[n]}_{j} }=\frac{\partial L}{\partial y_{j} }\cdot \frac{\partial \delta( I^{[n]}_{j})}{\partial  I^{[n]}_{j}} =(y_j-y_j^*)\cdot y_{j}\cdot(1-y_{j})</script><p>​                    b.再计算隐藏层误差函数L对神经元输入的导数:</p>
+<script type="math/tex; mode=display">
+\qquad注意:若我们已经求出L对k层神经元输入的导数，那么要求L对k-1层神经元输入的导数可以直接\\\quad \quad\quad\quad \ \  \ 看该神经元影响了k层哪些神经元的输入。当然很显然，影响了k层所有的神经元的输入。所以\\ \quad \quad\quad\quad k-1层某神经元对L的变化率是 该神经元对k层所有神经元输入的变化率乘以对应神经元对\\L的变化率的总和。即: \qquad \qquad\qquad\qquad\qquad \qquad\qquad\qquad\qquad \quad\qquad\qquad\\ g^{[k-1]}_j=\sum^{q_k}_{i=1}g^{[k]}_i\cdot\frac{\partial I^{[k]}_i}{\partial b_j^{[k-1]}}\cdot\frac{\partial  b_j^{[k-1]}}{\partial I_j^{[k-1]}} =\sum^{q_k}_{i=1}g^{[k]}_i\cdot w^{[k]}_{ij}\cdot\frac{\partial  \delta(I_j^{[k-1]})}{\partial I_j^{[k-1]}}=\sum^{q_k}_{i=1}g^{[k]}_i\cdot w^{[k]}_{ij}\cdot b^{[k-1]}_j(1- b^{[k-1]}_j)\\注意:\frac{\partial  b_j^{[k-1]}}{\partial I_j^{[k-1]}}=\frac{\partial  \delta(I_j^{[k-1]})}{\partial I_j^{[k-1]}} =\delta^\prime(I_j^{[k-1]})，即激活函数在该输入值下的导数</script><p>​         c.将b中的计算带入到更新公式里去，即可得到结果</p>
+<h1 id="三-tanh-与-sigmoid-激活函数的选择"><a href="#三-tanh-与-sigmoid-激活函数的选择" class="headerlink" title="三.tanh 与 sigmoid 激活函数的选择"></a>三.tanh 与 sigmoid 激活函数的选择</h1><p>​           先说我个人的结论，这两个函数的选择差别不大，tanh分类区间更大，一般而言实际性能更优，但是一些细节需要注意：</p>
+<p>​           先看sigmoid 的图像与导数图像：</p>
+<p><img src="/2018/12/24/bp神经网络与识别手写数字实例/sigmoid.png" alt="sigmoid"></p>
+<p>​           再看tanh的图像与导数图像:</p>
+<p><img src="/2018/12/24/bp神经网络与识别手写数字实例/tanh.jpg" alt="tanh"></p>
+<p>​          相同点:  1:两个激活函数兴奋区间都是(0,1)，这意味着实际处理的时候往往需要对数据进行归一化处理。 </p>
+<p>​                        2:都面临着梯度消失的情况，当神经元输出值很大的时候，两者误差对该神经元输入的梯度都非常的小，这往往面临着 神经网络的靠近输入层部分权重阀值很小，学习不足</p>
+<p>​         不同点    1: tanh 是0均值 ，sigmoid 是0.5均值 。而且tanh允许输出为负数，sigmoid 输出一定为正数</p>
+<p>​                            所以如果输出层选用tanh进行激活，拿多分类问题为例，此时不合法标签一定要为-1，才更有效果</p>
+<p>​                            而sigmoid 不合法标签就设置为0</p>
+<p>​                        2: 特征差异大的，tanh 比 sigmoid 性能更优，因为将不合法标签设置为-1, 相比设置为0，最后输出层不同神经元的输出相差会相对更大，也就预测的相对更准一点，而且误差下降的也会更快一点。</p>
+<h1 id="四-bp算法与手写数字识别代码实例"><a href="#四-bp算法与手写数字识别代码实例" class="headerlink" title="四.bp算法与手写数字识别代码实例"></a>四.bp算法与手写数字识别代码实例</h1><p>​       最后贴一份代码实例，以bp神经网络为基础做的一个机器学习识别图片的例子。</p>
+<p>​      (讲道理，这个代码我改了很久…..因为计算梯度的时候多加了个负号，结果一直没找出来。。)</p>
+<p>​       有个不好的地方，这里我没有有numpy的各种操作处理数据，自己写的函数，有些粗糙，并且也导致代码有点长。SVM的代码我就直接用Numpy了。 这个网络里面我把学习率设置为了0.5</p>
+<pre><code>import math
+import numpy as np
+import random
+import pandas as pd
+import matplotlib.pyplot as plt
+import minst_read as m
+false_label = 0 #错误标签的输出值设置
+cut = 1000      #从所有图片样本中抽取的个数
+def x(x):
+    &#39;&#39;&#39;归一化所有的x&#39;&#39;&#39;
+    t = []
+    for i in range(len(x)):
+        for j in range(len(x[i])):
+            t.append(x[i][j]/256)
+    return t
+def y(y):
+    &#39;&#39;&#39;格式化期望输出值y&#39;&#39;&#39;
+    x = [false_label for i in range(10)]
+    x[int(y)] = 1
+    return x
+def show(x):
+    &#39;&#39;&#39;读取二位数据图片&#39;&#39;&#39;
+    img = []
+    height = int(math.sqrt(len(x)))
+    for i in range(height):
+        this_row = x[i*height:(i+1)*height]
+        img.append(this_row)
+    plt.imshow(img, cmap=&#39;gray&#39;)
+    plt.show()
+def run():
+    &#39;&#39;&#39;训练与测试集数据分割&#39;&#39;&#39;
+    train_X = []
+    train_Y = []
+    Test_X  = []
+    Test_Y  = []
+    train_images = m.load_train_images()
+    train_labels = m.load_train_labels()
+    test_images =  m.load_test_images()
+    test_labels =  m.load_test_labels()
+    for i in range(min(len(train_images),cut)):
+        train_X.append(x(train_images[i]))
+        #show(x(train_images[i]))
+        train_Y.append(y(train_labels[i]))
+    for i in range(min(len(test_images),cut)):
+        Test_X.append(x(test_images[i]))
+        Test_Y.append(y(test_labels[i]))
+        #plt.imshow(train_images[i], cmap=&#39;gray&#39;)
+        #plt.show()
+    print(&#39;done&#39;)
+    return (train_X,train_Y,Test_X,Test_Y)
+def equal(x,y):
+    &#39;&#39;&#39;判断两个向量是否相等&#39;&#39;&#39;
+    for i in range(len(x)):
+        if x[i] != y[i]:
+            return False
+    return True
+def find_max(x):
+    &#39;&#39;&#39;找出向量中最大的值的下标&#39;&#39;&#39;
+    max_index = 0
+    max = -10000
+    for i in range(len(x)):
+        if x[i] &gt; max:
+            max = x[i]
+            max_index = i
+    return max_index
+class NN:
+    def __init__(self,n):
+        &#39;&#39;&#39;用MSE作为cost function&#39;&#39;&#39;
+        self.cell = []#保存每个神经单元的输出值
+        self.prepare = []
+        self.weight = [[]]#self.weight[k][j][i]表示第k层第j个神经元与k-1层第i个单元格的链接权值
+        self.threshold = [0]
+        self.active = [0]#第对应层神经单元的激活函数
+        self.n = n #n是学习率
+        self.g = [[]]#用于存储对应层神经单元MSE对该单元输入的负梯度
+        self.MSE=[]#每一轮的MSE
+        self.y = []
+        self.x = []
+        self.cost_function = &#39;MSE&#39;
+        self.juge = 0
+    def sigmoid(self,x):
+         &#39;&#39;&#39;神经网络单元格都选作sigmoid作为&#39;&#39;&#39;
+         return 1/(1+np.exp(-x))
+    def deriv_sig(self,x):
+        &#39;&#39;&#39;sigmoid的导数&#39;&#39;&#39;
+        return x*(1-x)
+    def tanh(self,x):
+        if x &lt; 0.000000000001:
+            x = 0.000000000001
+        return (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
+    def deriv_cost_function(self,cost,y,y1,k):
+        sum = 0
+        if cost == &#39;MSE&#39;:
+            #print(y,y1)
+            for i in range(len(y)):
+                sum += y[i][k] -y1[i][k]
+                #print(y[i][k],y1[i][k])
+            #print(k,sum)
+            return  sum
+    def MSED(self,y,y1):
+        sum = 0
+        for i in range(len(y)):
+            sum += (y[i]-y1[i])*(y[i]-y1[i])
+        return sum
+    def deriv_tanh(self,x):
+        return 1-x**2
+    def relu(self,x):
+        return max(0,x)
+    def deriv_relu(self,x):
+        if x &gt; 0:
+            return 1
+        else:
+            return 0
+    def calculte_cell(self,x,active):
+        &#39;&#39;&#39;x是单元格的输入,active是激活函数&#39;&#39;&#39;
+        if active == &#39;sigmoid&#39;:
+            return self.sigmoid(x)
+        if active == &#39;tanh&#39;:
+            return self.tanh(x)
+        if active == &#39;relu&#39;:
+            return self.relu(x)
+    def calculte_cell_gradient(self,x,active):
+        &#39;&#39;&#39;计算神经元的梯度&#39;&#39;&#39;
+        if active == &#39;sigmoid&#39;:
+            return self.deriv_sig(x)
+        if active == &#39;tanh&#39;:
+            return self.deriv_tanh(x)
+        if active == &#39;relu&#39;:
+            return self.deriv_relu(x)
+    def Dense(self,dim = 0,active = &#39;sigmoid&#39;):
+        &#39;&#39;&#39;创建一层全连接的神经单元，神经单元个数=dim,神经单元激活函数默认为sigmoid&#39;&#39;&#39;
+        self.prepare.append([dim,active])
+    def initial(self,x):
+        &#39;初始化网络&#39;
+        self.cell.append([])
+        for t in range(len(self.prepare)):
+            item = self.prepare[t]
+            self.cell.append([0 for i in range(item[0])])
+            #增加神经单元
+            self.active.append(item[1])
+            #保存对应的激活函数
+            self.threshold.append([random.uniform(-0.2,0.2) for i in range(item[0])])
+            self.g.append([0 for i in range(item[0])])
+            #增加阀值
+            if t != 0:
+               last_item = self.prepare[t-1][0]
+            else:
+               last_item = len(x)
+            self.weight.append([[random.uniform(-0.2,0.2) for j in range(last_item)] for i in range(item[0])])
+            #保存权重
+        if self.active[-1] == &#39;sigmoid&#39;:
+            self.juge = 0.5
+        if self.active[-1] == &#39;tanh&#39;:
+            self.juge = 0
+        if self.active[-1] == &#39;relu&#39;:
+            self.juge = 0
+        #初始化神经单元值的保存
+        &#39;&#39;&#39;初始化网络&#39;&#39;&#39;
+    def ADD(self,x,y):
+        &#39;:return x+y&#39;
+        z = []
+        for i in range(len(x)):
+            z.append(x[i]+y[i])
+        return z
+    def minor(self,x,y):
+        &#39;:return x-y&#39;
+        z = []
+        for i in range(len(x)):
+            z.append(x[i]-y[i])
+        return z
+    def sub(selfs,x,k):
+        z = []
+        for i in range(len(x)):
+            z.append(x[i]/k)
+        return z
+    def fit(self,X,Y,epoch = 5,cost_function = &#39;MSE&#39;,batch = 20):
+        self.initial(X[0])
+        for ep in range(epoch):
+            print(&quot;第{}次训练&quot;.format(ep))
+            MSES = 0
+            account = 0
+            total_MSE = [0 for i in range(len(self.cell[-1]))]
+            iteration = int(len(X)/batch)
+            if iteration != len(X)/batch:
+                iteration += 1
+            for i in range(iteration):
+               batch_output = []
+               batch_expect = []
+               for j in range(min(batch,len(X)-i*batch)):
+                   #print(i,j)
+                   self.cell[0] = X[i*batch + j]
+                   self.y = Y[i*batch + j]
+                   self.update_net_forward()
+                   #print(&#39;各层神经元值&#39;)
+                   #for i in range(len(self.cell)):
+                       #print(self.cell[i])
+                   #print(&#39;各层神经元收到的权重&#39;)
+                   #for j in range(len(self.weight)):
+                       #print(self.weight[j])
+                   batch_output.append(self.cell[-1][:])
+                   batch_expect.append(self.y[:])
+                   item = [false_label for i in range(len(self.y))]
+                   this_MSE = self.minor(self.cell[-1],self.y)
+                   total_MSE = self.ADD(this_MSE,total_MSE)
+                   item[find_max(self.cell[-1])] = 1
+                   if equal(item,self.y):
+                      account += 1
+                   else:
+                      pass
+                   MSES += self.MSED(self.cell[-1],self.y)
+                   #print(&#39;MSE:&#39;,MSES/2)
+               #print(&#39;期望输出&#39;,batch_expect)
+               self.update_bp(batch_output,batch_expect)
+            print(&#39;训练集正确率&#39;,account/len(X))
+            print(&#39;平均误差&#39;,MSES/len(X))
+            if MSES/len(X)&lt;= 0.0001:
+                print(self.cell[-1])
+                break
+            print()
+    def update_net_forward(self):
+        &#39;&#39;&#39;从输入层开始，从前往后，根据输入层的值更新网络单元格的值&#39;&#39;&#39;
+        #print(self.weight)
+        for k in range(1,len(self.cell)):
+            for j in range(len(self.cell[k])):
+                #计算第k层第j个单元格的值
+                sum = 0
+                for i in range(len(self.cell[k-1])):
+                    #print(k,j,i)
+                    sum += self.cell[k-1][i]*self.weight[k][j][i]
+                #print(self.cell[k-1],self.weight[k][j],self.threshold[k][j])
+                #print(sum + self.threshold[k][j])
+                self.cell[k][j] = self.calculte_cell(sum + self.threshold[k][j],self.active[k])
+                #print(self.cell[k][j])
+    def update_bp(self,batch_output,batch_expect):
+        &#39;&#39;&#39;bp更新策略&#39;&#39;&#39;
+        for k in [i for i in range(1,len(self.active))][::-1]:
+            &#39;&#39;&#39;首先更新到k层的神经单元的梯度项，然后更新阀值,然后更新第k层的神经单元与k-1层连接的权重&#39;&#39;&#39;
+            for i in range(len(self.g[k])):
+                #第k层第i个神经元
+                if k == len(self.active)-1:
+                    self.g[k][i] = -1*self.deriv_cost_function(self.cost_function,batch_output,batch_expect,i)*self.calculte_cell_gradient(self.cell[k][i],active=self.active[k])
+                    #print(&#39;{}层{}神经元误差导数为&#39;.format(k,i),self.deriv_cost_function(self.cost_function,batch_output,batch_expect,i))
+                    #print(&#39;{}层{}神经元求导为{}&#39;.format(k,i,self.calculte_cell_gradient(self.cell[k][i],active=self.active[k])))
+                    #print(&#39;输出层误差为&#39;,self.g[k])
+                else:
+                #计算隐藏层残差
+                    sum = 0
+                    for j in range(len(self.g[k+1])):
+                        sum += self.g[k+1][j]*self.weight[k+1][j][i]
+                    #首先是 负的 k+1层所有神经元的梯度项*与之相连的梯度相乘，最后是与该神经单元的激活函数的导数相乘
+                    self.g[k][i] = self.calculte_cell_gradient(self.cell[k][i],active=self.active[k])*sum
+                    #print(&#39;隐藏层误差为&#39;,self.g[k])
+        for k in range(1,len(self.active)):
+            for i in range(len(self.g[k])):
+                #self.threshold[k][i] = self.threshold[k][i] + self.n*self.g[k][i]
+                #更新阀值
+                for j in range(len(self.cell[k-1])):
+                    #print(&quot;{}层{}神经元与上一层{}神经元连接权重变动值为{}&quot;.format(k,i,j,self.n*self.g[k][i]*self.cell[k-1][j]))
+                    #print(&#39;原先值为{}&#39;.format(self.weight[k][i][j]))
+                    self.weight[k][i][j] = self.weight[k][i][j] + self.n*self.g[k][i]*self.cell[k-1][j]
+                    #print(&#39;更新为&#39;,self.weight[k][i][j])
+                #更新权重:
+    def predict(self,X,y):
+        Y = []
+        for x in X:
+            self.cell[0] = x
+            self.update_net_forward()
+            print(&#39;图片数字识别结果为&#39;,find_max(self.cell[-1]))
+            show(x)
+            item = [false_label for i in range(len(self.cell[-1]))]
+            item[find_max(self.cell[-1])] = 1
+            Y.append(item)
+        acc_count = 0
+        for i in range(len(Y)):
+             if equal(Y[i],y[i]):
+                 acc_count += 1
+        print(&#39;预测集正确率&#39;,acc_count/len(Y))
+        return Y
+    def plot(self,x,y):
+        figure = plt.figure()
+        for i in range(len(x)):
+            if y[i][1] == 1:
+               plt.scatter(x[i][0],x[i][1],c=&#39;red&#39;,marker=&#39;*&#39;)
+            else:
+               plt.scatter(x[i][0],x[i][1],c=&#39;black&#39;,marker=&#39;x&#39;)
+        raw_x = np.linspace(-10,10,100)
+        for i in range(len(self.weight[-1])):
+           weight = self.weight[-1][i]
+           threshold = self.threshold[-1][i]
+           y = []
+           for item in raw_x:
+               y.append(-1*threshold/weight[1]-weight[0]*item/weight[1])
+           plt.plot(raw_x,y)
+        plt.show()
+train_X ,train_Y ,Test_X,Test_Y  = run()
+Handwritting = NN(0.5)
+Handwritting.Dense(40,active=&#39;sigmoid&#39;)
+Handwritting.Dense(10,active=&#39;sigmoid&#39;)
+Handwritting.fit(train_X[:cut],train_Y[:cut],epoch=12,batch = 1)
+Handwritting.predict(Test_X,Test_Y)
+</code></pre><p>其中用到了读取minst的程序文件minst_read.py： （注: 数据集我放在..\minst\ 下)</p>
+<pre><code># encoding: utf-8
+import numpy as np
+import struct
+import matplotlib.pyplot as plt
+# 训练集文件
+train_images_idx3_ubyte_file = &#39;mnist/train-images.idx3-ubyte&#39;
+# 训练集标签文件
+train_labels_idx1_ubyte_file = &#39;mnist/train-labels.idx1-ubyte&#39;
+# 测试集文件
+test_images_idx3_ubyte_file = &#39;mnist/t10k-images.idx3-ubyte&#39;
+# 测试集标签文件
+test_labels_idx1_ubyte_file = &#39;mnist/t10k-labels.idx1-ubyte&#39;
+
+def decode_idx3_ubyte(idx3_ubyte_file):
+    &quot;&quot;&quot;
+    解析idx3文件的通用函数
+    :param idx3_ubyte_file: idx3文件路径
+    :return: 数据集
+    &quot;&quot;&quot;
+    # 读取二进制数据
+    bin_data = open(idx3_ubyte_file, &#39;rb&#39;).read()
+
+    # 解析文件头信息，依次为魔数、图片数量、每张图片高、每张图片宽
+    offset = 0
+    fmt_header = &#39;&gt;iiii&#39;
+    magic_number, num_images, num_rows, num_cols = struct.unpack_from(fmt_header, bin_data, offset)
+    print(&#39;魔数:{}, 图片数量: {}张, 图片大小: {}*{}&#39;.format(magic_number,num_images,num_rows,num_cols))
+    image_size = num_rows * num_cols
+    offset += struct.calcsize(fmt_header)
+    fmt_image = &#39;&gt;&#39; + str(image_size) + &#39;B&#39;
+    images = np.empty((num_images, num_rows, num_cols))
+    for i in range(num_images):
+        if (i + 1) % 10000 == 0:
+            print(&#39;已解析 %d&#39; % (i + 1) + &#39;张&#39;)
+        images[i] = np.array(struct.unpack_from(fmt_image, bin_data, offset)).reshape((num_rows, num_cols))
+        offset += struct.calcsize(fmt_image)
+    return images
+
+def decode_idx1_ubyte(idx1_ubyte_file):
+    &quot;&quot;&quot;
+    解析idx1文件的通用函数
+    :param idx1_ubyte_file: idx1文件路径
+    :return: 数据集
+    &quot;&quot;&quot;
+    # 读取二进制数据
+    bin_data = open(idx1_ubyte_file, &#39;rb&#39;).read()
+
+    # 解析文件头信息，依次为魔数和标签数
+    offset = 0
+    fmt_header = &#39;&gt;ii&#39;
+    magic_number, num_images = struct.unpack_from(fmt_header, bin_data, offset)
+    print(&#39;魔数:{}, 图片数量: {}张&#39; .format(magic_number, num_images))
+
+    # 解析数据集
+    offset += struct.calcsize(fmt_header)
+    fmt_image = &#39;&gt;B&#39;
+    labels = np.empty(num_images)
+    for i in range(num_images):
+        if (i + 1) % 10000 == 0:
+            print(&#39;已解析 %d&#39; % (i + 1) + &#39;张&#39;)
+        labels[i] = struct.unpack_from(fmt_image, bin_data, offset)[0]
+        offset += struct.calcsize(fmt_image)
+    return labels
+
+
+def load_train_images(idx_ubyte_file=train_images_idx3_ubyte_file):
+    &quot;&quot;&quot;
+    TRAINING SET IMAGE FILE (train-images-idx3-ubyte):
+    [offset] [type]          [value]          [description]
+    0000     32 bit integer  0x00000803(2051) magic number
+    0004     32 bit integer  60000            number of images
+    0008     32 bit integer  28               number of rows
+    0012     32 bit integer  28               number of columns
+    0016     unsigned byte   ??               pixel
+    0017     unsigned byte   ??               pixel
+    ........
+    xxxx     unsigned byte   ??               pixel
+    Pixels are organized row-wise. Pixel values are 0 to 255. 0 means background (white), 255 means foreground (black).
+
+    :param idx_ubyte_file: idx文件路径
+    :return: n*row*col维np.array对象，n为图片数量
+    &quot;&quot;&quot;
+    return decode_idx3_ubyte(idx_ubyte_file)
+
+
+def load_train_labels(idx_ubyte_file=train_labels_idx1_ubyte_file):
+    &quot;&quot;&quot;
+    TRAINING SET LABEL FILE (train-labels-idx1-ubyte):
+    [offset] [type]          [value]          [description]
+    0000     32 bit integer  0x00000801(2049) magic number (MSB first)
+    0004     32 bit integer  60000            number of items
+    0008     unsigned byte   ??               label
+    0009     unsigned byte   ??               label
+    ........
+    xxxx     unsigned byte   ??               label
+    The labels values are 0 to 9.
+
+    :param idx_ubyte_file: idx文件路径
+    :return: n*1维np.array对象，n为图片数量
+    &quot;&quot;&quot;
+    return decode_idx1_ubyte(idx_ubyte_file)
+
+
+def load_test_images(idx_ubyte_file=test_images_idx3_ubyte_file):
+    &quot;&quot;&quot;
+    TEST SET IMAGE FILE (t10k-images-idx3-ubyte):
+    [offset] [type]          [value]          [description]
+    0000     32 bit integer  0x00000803(2051) magic number
+    0004     32 bit integer  10000            number of images
+    0008     32 bit integer  28               number of rows
+    0012     32 bit integer  28               number of columns
+    0016     unsigned byte   ??               pixel
+    0017     unsigned byte   ??               pixel
+    ........
+    xxxx     unsigned byte   ??               pixel
+    Pixels are organized row-wise. Pixel values are 0 to 255. 0 means background (white), 255 means foreground (black).
+
+    :param idx_ubyte_file: idx文件路径
+    :return: n*row*col维np.array对象，n为图片数量
+    &quot;&quot;&quot;
+    return decode_idx3_ubyte(idx_ubyte_file)
+
+
+def load_test_labels(idx_ubyte_file=test_labels_idx1_ubyte_file):
+    &quot;&quot;&quot;
+    TEST SET LABEL FILE (t10k-labels-idx1-ubyte):
+    [offset] [type]          [value]          [description]
+    0000     32 bit integer  0x00000801(2049) magic number (MSB first)
+    0004     32 bit integer  10000            number of items
+    0008     unsigned byte   ??               label
+    0009     unsigned byte   ??               label
+    ........
+    xxxx     unsigned byte   ??               label
+    The labels values are 0 to 9.
+
+    :param idx_ubyte_file: idx文件路径
+    :return: n*1维np.array对象，n为图片数量
+    &quot;&quot;&quot;
+    return decode_idx1_ubyte(idx_ubyte_file)
+
+def run():
+    train_images = load_train_images()
+    train_labels = load_train_labels()
+    test_images = load_test_images()
+    test_labels = load_test_labels()
+    #查看前十个数据及其标签以读取是否正确
+    for i in range(10):
+        print(train_labels[i])
+        plt.imshow(train_images[i], cmap=&#39;gray&#39;)
+        plt.show()
+    print(&#39;done&#39;)
+
+if __name__ == &#39;__main__&#39;:
+    run()
+</code></pre><h1 id="五-代码效果展示"><a href="#五-代码效果展示" class="headerlink" title="五.代码效果展示:"></a>五.代码效果展示:</h1><p>先看训练十一次的log信息:</p>
+<pre><code>魔数:2051, 图片数量: 60000张, 图片大小: 28*28
+已解析 10000张
+已解析 20000张
+已解析 30000张
+已解析 40000张
+已解析 50000张
+已解析 60000张
+魔数:2049, 图片数量: 60000张
+已解析 10000张
+已解析 20000张
+已解析 30000张
+已解析 40000张
+已解析 50000张
+已解析 60000张
+魔数:2051, 图片数量: 10000张, 图片大小: 28*28
+已解析 10000张
+魔数:2049, 图片数量: 10000张
+已解析 10000张
+done
+第0次训练
+训练集正确率 0.608
+平均误差 0.5561546376762758
+
+第1次训练
+训练集正确率 0.855
+平均误差 0.2449697466629816
+
+第2次训练
+训练集正确率 0.905
+平均误差 0.16534849256897396
+
+第3次训练
+训练集正确率 0.93
+平均误差 0.12308482912941311
+
+第4次训练
+训练集正确率 0.947
+平均误差 0.09383367317508189
+
+第5次训练
+训练集正确率 0.967
+平均误差 0.07027998189911099
+
+第6次训练
+训练集正确率 0.97
+平均误差 0.054370701422492625
+
+第7次训练
+训练集正确率 0.974
+平均误差 0.04402047434903034
+
+第8次训练
+训练集正确率 0.976
+平均误差 0.037549182206409175
+
+第9次训练
+训练集正确率 0.978
+平均误差 0.03291791473364534
+
+第10次训练
+训练集正确率 0.979
+平均误差 0.030125582955523932
+
+第11次训练
+训练集正确率 0.98
+平均误差 0.028044683515837665
+</code></pre><p>11次的时候训练集已经有98%的正确率已经是非常好了</p>
+<p>再贴一个测试例子：</p>
+<p><img src="/2018/12/24/bp神经网络与识别手写数字实例/预测.png" alt="预测"></p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/12/23/写在首页/" title="写在首页：用这个博客记录自己的学习历程">
+                    <div class="prevTitle">写在首页：用这个博客记录自己的学习历程</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+<div id="container"></div>
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script> 
+<script>
+    var gitment = new Gitment({
+        // id:  md5(window.location.pathname), // 可选。默认为 location.href
+        owner: 'skydownacai',
+        repo: 'comments',
+        oauth: {
+            client_id: 'ba32b9111050e797f1c9',
+            client_secret: '23c7772fced9840165a3e588cb81134928c56355',
+        },
+    })
+    gitment.render('container')
+
+</script>
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:932997367@qq.com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/skydownacai" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title="wechat">
+                  
+                  <img class="profile-qr" src="/assets/qr.png">
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-神经网络的结构与理解"><span class="toc-number">1.</span> <span class="toc-text">一.神经网络的结构与理解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-bp算法的本质与学习率的选择"><span class="toc-number">2.</span> <span class="toc-text">二.bp算法的本质与学习率的选择</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-bp算法更新公式推导："><span class="toc-number">3.</span> <span class="toc-text">三.bp算法更新公式推导：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-符号与约定"><span class="toc-number">3.0.0.1.</span> <span class="toc-text">1. 符号与约定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-更新公式"><span class="toc-number">3.0.0.2.</span> <span class="toc-text">2.更新公式:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-具体计算"><span class="toc-number">3.0.0.3.</span> <span class="toc-text">3.具体计算</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-tanh-与-sigmoid-激活函数的选择"><span class="toc-number">4.</span> <span class="toc-text">三.tanh 与 sigmoid 激活函数的选择</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四-bp算法与手写数字识别代码实例"><span class="toc-number">5.</span> <span class="toc-text">四.bp算法与手写数字识别代码实例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#五-代码效果展示"><span class="toc-number">6.</span> <span class="toc-text">五.代码效果展示:</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 3
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href="/2018/12/24/bp神经网络与识别手写数字实例/">bp算法与手写数字识别代码</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href="/2018/12/23/SVM1/">SVM[一]:最大间隔分离超平面与线性可分支持向量机</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href="/2018/12/23/写在首页/">写在首页：用这个博客记录自己的学习历程</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="myself"><span class="iconfont-archer">&#xe606;</span>myself</span>
+    
+        <span class="sidebar-tag-name" data-tags="sufe"><span class="iconfont-archer">&#xe606;</span>sufe</span>
+    
+        <span class="sidebar-tag-name" data-tags="线性可分支持向量机"><span class="iconfont-archer">&#xe606;</span>线性可分支持向量机</span>
+    
+        <span class="sidebar-tag-name" data-tags="最大间隔分离超平面"><span class="iconfont-archer">&#xe606;</span>最大间隔分离超平面</span>
+    
+        <span class="sidebar-tag-name" data-tags="神经网络"><span class="iconfont-archer">&#xe606;</span>神经网络</span>
+    
+        <span class="sidebar-tag-name" data-tags="bp算法"><span class="iconfont-archer">&#xe606;</span>bp算法</span>
+    
+        <span class="sidebar-tag-name" data-tags="手写数字识别"><span class="iconfont-archer">&#xe606;</span>手写数字识别</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="MYSELF"><span class="iconfont-archer">&#xe60a;</span>MYSELF</span>
+    
+        <span class="sidebar-category-name" data-categories="SVM"><span class="iconfont-archer">&#xe60a;</span>SVM</span>
+    
+        <span class="sidebar-category-name" data-categories="神经网络"><span class="iconfont-archer">&#xe60a;</span>神经网络</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "John Doe"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
+
+
