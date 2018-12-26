@@ -11,7 +11,7 @@
 
 
 <head><meta name="generator" content="Hexo 3.8.0">
-    <meta charset="utf-8">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="author" content="John Doe">
     <meta name="renderer" content="webkit">
@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>categories · Repository of skydownacai</title>
+    <title>Newsvendor模型对偶问题的显式解 · Repository of skydownacai</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -198,17 +198,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
     <!-- 百度统计  -->
     
-    <!-- 谷歌统计  -->
+    <!-- 谷歌统计  --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
     
 </head>
 
     
+        <body class="post-body">
     
-<header class="header">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">Skydownacai</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Newsvendor模型对偶问题的显式解</a>
+            </div>
+    </div>
     
     <a class="home-link" href="/">Skydownacai</a>
 </header>
@@ -220,24 +231,78 @@
 
 
 
+
+height:50vh;
 ">
     
     <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(/)"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
+            
+            Newsvendor模型对偶问题的显式解
+            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
+            
+            <!-- 404 -->
+            
         </p>
         <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="线性规划">线性规划</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Newsvendor">Newsvendor</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="对偶问题">对偶问题</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">814</span>阅读时长: <span class="post-count reading-time">4 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/12/26</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
         
     </div>
 </div>
@@ -340,7 +405,145 @@
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        
+        <h1 id="Newsvendor模型对偶问题的显式解"><a href="#Newsvendor模型对偶问题的显式解" class="headerlink" title="Newsvendor模型对偶问题的显式解"></a>Newsvendor模型对偶问题的显式解</h1><h2 id="一-离散型"><a href="#一-离散型" class="headerlink" title="一.离散型"></a>一.离散型</h2><h4 id="Model"><a href="#Model" class="headerlink" title="Model:"></a>Model:</h4><script type="math/tex; mode=display">
+maximize:\sum_{\omega∈\Omega}\pi_\omega q_\omega D_\omega\\
+ \qquad  \qquad st:\sum_{\omega∈\Omega}\pi_\omega q_\omega \leq c\\
+\qquad \qquad \quad -h\leq\pi_\omega\leq p</script><h4 id=""><a href="#" class="headerlink" title=" "></a> </h4><h4 id="约定"><a href="#约定" class="headerlink" title="约定:"></a>约定:</h4><script type="math/tex; mode=display">
+\Pi_d^* 为模型的optimal \ cost \\ \ \ \ \ \ \ \  \pi^*为模型的potimal\ solution \\ |\Omega| = n</script><h4 id="Solution"><a href="#Solution" class="headerlink" title="Solution:"></a>Solution:</h4><script type="math/tex; mode=display">
+(I)如果不考虑约束\sum_{\omega∈\Omega}\pi_\omega q_\omega \leq c,则\sum_{\omega∈\Omega}\pi_\omega q_\omega D_\omega 在 \ \ {\forall}\omega ∈\Omega \ \ \ \pi_\omega =p 处取得极值\\此时\Pi_d^*=p\sum_{\omega∈\Omega}q_\omega D_\omega \\ 此时约束条件\sum_{\omega∈\Omega}\pi_\omega q_\omega =p\sum_{\omega∈\Omega}q_\omega=p\leq c \\\therefore 当p\leq c,约束不起作用，可得\Pi_d^*=p\sum_{\omega∈\Omega}q_\omega D_\omega,\pi^*= \bold p \\(II)当\ p>c,此时约束起作用，即\sum_{\omega∈\Omega}\pi_\omega q_\omega =c \ 所以模型等价于: \quad \quad \quad \quad \quad \quad \quad\\</script><script type="math/tex; mode=display">
+maximize:\sum_{\omega∈\Omega}\pi_\omega q_\omega D_\omega\\
+ \qquad  \qquad st:\sum_{\omega∈\Omega}\pi_\omega q_\omega = c\\
+\qquad \qquad \quad -h\leq\pi_\omega\leq p</script><script type="math/tex; mode=display">
+(一)为了求解,我们首先证明:\forall \  \omega_1 \ \omega_2∈ \Omega,若D_{\omega_1} \geq D_{\omega_2},则必有 \pi^*_{\omega_1} \geq \pi^*_{\omega_2}
+\\
+证：\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad \quad\quad
+\\
+若不然，不妨设\pi^*_{\omega_1} < \pi^*_{\omega_2} \ \ \ ,于是我们固定除\pi^*_{\omega_1},\pi^*_{\omega_2}外的所有值 
+\quad\quad\quad \ \
+\\
+并且记:\sum_{\omega∈\Omega ,\omega ≠\omega_1,\omega_2}\pi_\omega q_\omega =k \ \ \ \ \ \ \ \ \ \ \ \sum_{\omega∈\Omega ,\omega ≠\omega_1,\omega_2}\pi_\omega q_\omega D_\omega = m 
+\quad\quad\quad\ \ 
+\\ 
+\therefore \sum_{\omega∈\Omega}\pi_\omega q_\omega = c \Leftrightarrow \pi^*_{\omega_1}q_{\omega_1}+\pi^*_{\omega_2}q_{\omega_2} +k = c \qquad\qquad\qquad \ \ \
+\quad\quad\quad\ \ 
+\\ \therefore \pi^*_{\omega_2}q_{\omega_2}=c-k-\pi^*_{\omega_1}q_{\omega_1} \qquad\qquad\qquad\qquad\qquad\qquad\quad \ \ \ 
+\quad\quad\quad \ \ 
+\\
+\therefore \Pi_d^* =\pi^*_{\omega_1}q_{\omega_1}D_{\omega_1}+\pi^*_{\omega_2}q_{\omega_2}D_{\omega_2}+m  \qquad\qquad\qquad\qquad\quad \ 
+\quad\quad\quad \ 
+\\ 
+=\pi^*_{\omega_1}q_{\omega_1}D_{\omega_1} +(c-k-\pi^*_{\omega_1}q_{\omega_1})D_{\omega_2}+m \qquad \ \  
+\quad\quad\quad \ 
+\\
+=\pi^*_{\omega_1}q_{\omega_1}(D_{\omega_1}-D_{\omega_2})+m \qquad \qquad\qquad\qquad \ \
+\quad\quad\quad \ 
+\\ 
+\therefore \Pi_d^*  是一个关于\pi^*_{\omega_1}的增函数 \qquad \qquad\qquad\qquad\qquad\qquad \quad \ \quad\quad\quad \ 
+\\
+\because-h\leq \pi^*_{\omega_1}<\pi^*_{\omega_2}\leq p\qquad \qquad\qquad\qquad\qquad\qquad\qquad \ \ \ 
+\quad\quad\quad
+\\
+\therefore 可以通过提升\pi^*_{\omega_1},降低\pi^*_{\omega_2},使得\Pi_d^*的值上升\qquad\qquad\qquad \ \ 
+\quad\quad\quad
+\\
+则\Pi_d^*此时不是optimal\ cost，与题设矛盾！∴假设不成立
+\quad\quad\quad\quad\quad
+\\
+∴若D_{\omega_1} \geq D_{\omega_2},则必有 \pi^*_{\omega_1} \geq \pi^*_{\omega_2} \qquad\qquad\qquad\qquad\qquad\ \ \
+\quad\quad\quad</script><p>​         </p>
+<script type="math/tex; mode=display">
+（二)注意到线性规划里面的optimal \ conditon \ 即 \ optimal \ solution 在basic\  feasible\\\ solution上取得 \qquad \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad \  \\即:对所有的\ \omega ∈ \Omega ,至少有n-1个\omega 取值为 -h 或者q \qquad\qquad\qquad\qquad \\ ∴ 结合(一)中的证明不失一般性，我们可以做如下假设:  \qquad\qquad\qquad\qquad \ \ \\ 
+\\ D^*_{\omega_1} \leq D^*_{\omega_2} \leq D^*_{\omega_3}\leq ...\leq D^*_{\omega_n} 
+\\ \pi^*_{\omega_1} \leq \pi^*_{\omega_2}\  \leq \pi^*_{\omega_3}\ \leq ...\leq \pi^*_{\omega_n}</script><script type="math/tex; mode=display">
+为了使得\Pi_d^*尽可能的大， 那么取值为-h的\pi^*_{\omega}，要尽可能的少，不妨设为k个 \ 
+\\
+∴\pi^*_{\omega_1} =\pi^*_{\omega_2} =...=\pi^*_{\omega_k} = -h,\pi^*_{\omega_k+1} 待定\ , \pi^*_{\omega_k+2}=...=\pi^*_{\omega_n} = p 
+\quad\quad\quad\quad
+\\
+∴\sum^k_{i=1}\pi^*_{\omega_i}q_{\omega_i}+\pi^*_{\omega_{k+1}}q_{\omega_{k+1}}+ \sum^n_{i=k+2}\pi^*_{\omega_i}q_{\omega_i} = c
+\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad
+\\∴ -h\sum^k_{i=1}q_{\omega_i}+\pi^*_{\omega_{k+1}}q_{\omega_{k+1}}+p\sum^n_{i=k+2}q_{\omega_i} = c
+\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad
+\\∴\pi^*_{\omega_{k+1}}=\frac{c+h\sum^k_{i=1}q_{\omega_i}-p\sum^n_{i=k+2}q_{\omega_i}}{q_{\omega_{k+1}}}
+\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad
+\\注意到-h\leq \pi^*_{\omega_{k+1}} \leq p
+\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad
+
+\\
+∴k=inf\left\{k=1,2,...,n|-h\leq\frac{c+h\sum^k_{i=1}q_{\omega_i}-p\sum^n_{i=k+2}q_{\omega_i}}{q_{\omega_{k+1}}}\leq p \right\}
+\\
+∴\pi^*_d =(\underbrace{-h,...,-h}_{k个},\frac{c+h\sum^k_{i=1}q_{\omega_i}-p\sum^n_{i=k+2}q_{\omega_i}}{q_{\omega_{k+1}}},\underbrace{p,...,p}_{n-1-k个})
+\quad\quad\quad\quad  \ 
+\\ 
+∴\Pi_d^* =\sum^k_{i=1}\pi^*_{\omega_i}q_{\omega_i}D_{\omega_i}+\pi^*_{\omega_{k+1}}q_{\omega_{k+1}}D_{\omega_{k+1}}+ \sum^n_{i=k+2}\pi^*_{\omega_i}q_{\omega_i}D_{\omega_i} 
+\quad\quad\quad\quad\quad\quad
+\\ \quad\quad\quad
+=-h\sum^k_{i=1}q_{\omega_i}D_{\omega_i} + ({c+h\sum^k_{i=1}q_{\omega_i}-p\sum^n_{i=k+2}q_{\omega_i}})D_{\omega_{k+1}}+p\sum^n_{i=k+2}q_{\omega_i}D_{\omega_i}
+
+\\ \quad\quad\quad \ \  
+=h\sum^n_{i=k+2}q_{\omega_i}(D_{\omega_{k+1}}-D_{\omega_i})+p\sum^n_{i=k+2}q_{\omega_i}(D_{\omega_i}-D_{\omega_{k+1}})+cD_{\omega_{k+1}} \qquad\quad</script><h2 id="二-连续型"><a href="#二-连续型" class="headerlink" title="二.连续型:"></a>二.连续型:</h2><p>​       记需求D的连续分布函数为F(D)</p>
+<h4 id="model"><a href="#model" class="headerlink" title="model:"></a>model:</h4><script type="math/tex; mode=display">
+maximize:\int^{+∞}_{0}\pi_D DdF(D) 
+\\
+\qquad \qquad \ \ \  st:\int^{+∞}_{0}\pi_DdF(D) =c 
+ \\
+\qquad \qquad \quad -h\leq\pi_D\leq p</script><h4 id="约定-1"><a href="#约定-1" class="headerlink" title="约定:"></a>约定:</h4><p>​           </p>
+<script type="math/tex; mode=display">
+\Pi_d^* 为模型的optimal \ cost 
+
+\\ \pi^*(D)为模型的optimal\ solution,是一个关于需求D的函数</script><h4 id="solution"><a href="#solution" class="headerlink" title="solution:"></a>solution:</h4><script type="math/tex; mode=display">
+(I)\  当\ \ p \leq c: 
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad
+\\
+ 容易知道此时约束不起作用 ,则:
+ \qquad\qquad\qquad\qquad\qquad\qquad\qquad \ 
+\\
+\Pi_d^* = p\int^{+∞}_{0}DdF(D)
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad
+\\
+\pi^*(D) = p 
+\quad \quad\quad\quad\quad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad
+\\
+(II)当\ p>c:
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad
+\\
+此时约束起作用，∴必有：\int^{+∞}_{0}\pi(D)dF(D) =c \quad\ \qquad\qquad\quad
+\\
+注意到连续性的情况实际上在离散型的情况下，将n→+∞得到的\ \ \ 
+\\
+那么根据离散型结论可知: 当模型取得最优值的时候,必有: \qquad \quad \  
+\\
+\quad\quad\quad\pi^*_d =(\underbrace{-h,...,-h}_{k个},\frac{c+h\sum^k_{i=1}q_{\omega_i}-p\sum^n_{i=k+2}q_{\omega_i}}{q_{\omega_{k+1}}},\underbrace{p,...,p}_{n-1-k个})
+\quad\quad\quad\quad  \ 
+\\∴连续情况下，可以忽略\pi^*_d中第k+1个分量的值,因为q_{\omega_{k+1}}无穷小 \ \ \ 
+\\∴\pi(D) 可以看作一个分段函数，即：\qquad\qquad\qquad\qquad\qquad\qquad
+\\
+\pi(D)=
+\begin{equation}
+\left\{
+             \begin{array}{lr}
+             -h & D\leq m  \\
+             \ \ \ p  & D> m\\ 
+             \end{array}
+\right.
+\end{equation}
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad \
+\\下面计算m:
+注意到此时为了满足约束条件，那么必有:
+\qquad\quad \qquad 
+\\\qquad\int^{+∞}_{0}\pi(D)dF(D) =c
+\qquad\qquad
+\qquad\qquad\qquad\qquad
+\\\Leftrightarrow -h\int^{m}_{0}dF(D)+p\int^{+∞}_{m}dF(D)=c
+\qquad\qquad\quad
+\qquad \qquad
+\\\Leftrightarrow -hF(m) +p(1-F(m))=c
+\qquad\qquad\qquad\qquad\qquad\qquad \ 
+\\\Leftrightarrow F(m) =\frac{p-c}{p+h}
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad
+\\∴m是满足F(m) =\frac{p-c}{p+h}的值
+\qquad\qquad\qquad\qquad\qquad\quad\quad \ \ \
+\\∴\Pi^*_d=-h\int^{m}_{0}DdF(D)+p\int^{+∞}_{m}DdF(D)\quad\quad\quad\quad\quad\quad \</script>
     </article>
     <!-- license  -->
     
@@ -350,6 +553,11 @@
             
         </li>
         <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/12/24/bp神经网络与识别手写数字实例/" title="bp算法与手写数字识别代码">
+                    <div class="prevTitle">bp算法与手写数字识别代码</div>
+                </a>
             
         </li>
     </ul>
@@ -469,6 +677,24 @@
 </footer>
     </div>
     <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Newsvendor模型对偶问题的显式解"><span class="toc-number">1.</span> <span class="toc-text">Newsvendor模型对偶问题的显式解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-离散型"><span class="toc-number">1.1.</span> <span class="toc-text">一.离散型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Model"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">Model:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#"><span class="toc-number">1.1.0.2.</span> <span class="toc-text"> </span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#约定"><span class="toc-number">1.1.0.3.</span> <span class="toc-text">约定:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Solution"><span class="toc-number">1.1.0.4.</span> <span class="toc-text">Solution:</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-连续型"><span class="toc-number">1.2.</span> <span class="toc-text">二.连续型:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#model"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">model:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#约定-1"><span class="toc-number">1.2.0.2.</span> <span class="toc-text">约定:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#solution"><span class="toc-number">1.2.0.3.</span> <span class="toc-text">solution:</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -652,6 +878,8 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
      
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -667,7 +895,7 @@ jsonContent:
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
 
