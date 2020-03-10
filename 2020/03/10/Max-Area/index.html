@@ -11,7 +11,7 @@
 
 
 <head><meta name="generator" content="Hexo 3.8.0">
-    <meta charset="utf-8">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="author" content="John Doe">
     <meta name="renderer" content="webkit">
@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Repository of skydownacai</title>
+    <title>Leetcode Q11.[盛最多水的容器] 算法与数学证明 · Repository of skydownacai</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -198,17 +198,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
     <!-- 百度统计  -->
     
-    <!-- 谷歌统计  -->
+    <!-- 谷歌统计  --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
     
 </head>
 
     
+        <body class="post-body">
     
-<header class="header">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">Skydownacai</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Leetcode Q11.[盛最多水的容器] 算法与数学证明</a>
+            </div>
+    </div>
     
     <a class="home-link" href="/">Skydownacai</a>
 </header>
@@ -220,24 +231,78 @@
 
 
 
+
+height:50vh;
 ">
     
     <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(/)"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
+            
+            Leetcode Q11.[盛最多水的容器] 算法与数学证明
+            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
+            
+            <!-- 404 -->
+            
         </p>
         <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="双指针法">双指针法</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="O(n)">O(n)</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="leetcode">leetcode</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">469</span>阅读时长: <span class="post-count reading-time">2 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/03/10</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
         
     </div>
 </div>
@@ -338,48 +403,116 @@
 </script>        
         <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
         <div class="container container-unloaded">
-            <main class="main index-page">
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href="/2018/12/24/bp神经网络与识别手写数字实例/">
-            
-                <span class="stick-top iconfont-archer">&#xe63d;</span>
-                
-                <span>bp算法与手写数字识别代码</span>
-        </a>
-        <div class="abstract-content">
-            一.神经网络的结构与理解​       
+            <main class="main post-page">
+    <article class="article-entry">
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h3><p>看到leetcode解答区很多人都是主观去理解双指针法,但是实际上我在做这道题的时候是先从数学构造上证明了搜索空间是什么，然后才想到的算法。所以在这里写下来</p>
+<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>给你 n 个非负整数 a1，a2，…，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0)。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。</p>
+<p>来源：力扣（LeetCode）<br>链接：<a href="https://leetcode-cn.com/problems/container-with-most-water" target="_blank" rel="noopener">https://leetcode-cn.com/problems/container-with-most-water</a></p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><pre><code>class Solution:
+    def maxArea(self, height: List[int]) -&gt; int:
+        i = 0
+        j = len(height) - 1
+        res = 0
+        while i &lt; j:
+            this = (j - i) * min(height[j],height[i])
+            if this &gt; res:
+                res = this
+            if height[j] &lt;= height[i]:
+                j -= 1
+                continue
+            if height[i] &lt;= height[j]:
+                i += 1
+                continue
+        return res
+</code></pre><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>问题的本质是写一个算法求:</p>
+<script type="math/tex; mode=display">
+\mathop{argmax}_{1\leq i \lt j \leq n}:h(i,j)=(j-i)\cdot min\{a_i,a_j\}\\</script><p>实际上如果通过双重循环那么o(n^2)时间复杂度便可以解决,但是我们下面可以用o(n)的时间复杂度解决</p>
+<p>我们不妨设:</p>
+<script type="math/tex; mode=display">
+(i^*,j^*)=\mathop{argmax}_{1\leq i \lt j \leq n}:h(i,j)\\</script><p>注意到:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\forall k_1∈[0,i^*-1],k_2∈[0,n-j^*]h(i^*-k_1,j^*+k_2) \leq h(i^*,j^*)\\
+&\Leftrightarrow (j^*+k_2-i^*+k_1)\cdot min\{a_{i^*-k_1},a_{j^*+k_2}\} \leq (j^*-i^*)\cdot min\{a_{i^*},a_{j^*}\}\\
 
-一个具有典型三层结构的神经网络，分别是一层输入层，一层隐藏层，一层输出层​          实际上，这只是神经网络的结构一种结构，很多时候隐藏层往往不只是一层。
-​        就我的理解，神经网络实际上是通过隐藏层来提取特征，理论上隐藏层越多，或者隐藏层神经元个数越多，可以以任意精度逼近一个函数。 如果没有隐藏层，输入层只有两个单元，输出层只有一个输出。那么此时的神经网络就是个简单的感知机，可以实现简单的 线性划分 或者异或问题。  神经元每个单元接受的输入 都是上一层神经单元输出的线性组合。通过激活函数来输出， 以实现从线性划分到非线性...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/12/24</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class="abstract-tags">
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="神经网络">神经网络</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="bp算法">bp算法</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="手写数字识别">手写数字识别</a>
-    
-</div>
-            
-        </div>
+&\Leftrightarrow 
+min\{a_{i^*-k_1},a_{j^*+k_2}\}\leq
+min\{a_{i^*},a_{j^*}\}\cdot \frac{j^*-i^*}{j^*+k_2-i^*+k_1}\\
+
+&I.当a_{i^*} < a_{j^*}时:
+
+我们不妨设k_1 = 0,k_2>0,上式等价于:\\
+&min\{a_{i^*},a_{j^*+k_2}\}\leq
+min\{a_{i^*},a_{j^*}\}\cdot \frac{j^*-i^*}{j^*+k_2-i^*}<min\{a_{i^*},a_{j^*}\}=a_{i^*}\\
+&\Rightarrow a_{j^*+k_2} < a_i^*①\\
+
+&II.当a_{i^*} >= a_{j^*}时:
+
+我们不妨设k_1 > 0,k_2=0,上式等价于:\\
+&min\{a_{i^*-k_1},a_{j^*}\}\leq
+min\{a_{i^*},a_{j^*}\}\cdot \frac{j^*-i^*}{j^*+k_1-i^*}<min\{a_{i^*},a_{j^*}\}=a_{j^*}\\
+&\Rightarrow a_{i^*-k_1} < a_j^*②\\
+
+&令 S=\{(i,j)|1\leq i \lt j \leq n，a_{j+1},...,a_n<a_i或a_1,..,a_{i-1}<a_j\}\\
+&必然有:(i^*,j^*)∈S\\
+\end{align}</script><p>搜索算法见代码，简单来讲就是左右两个指针，初始位置为1,n.右指针开始向内移动，一旦遇到比左指针值大的,暂停。\左指针向内移动直到遇到比右指针大的，暂停。然后右指针移动直到两个指针相遇停止循环。</p>
+<p>我们可以很容易的证明:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&设算法的暂停点集合为S^* = \{(1,n),(i_1,j_1),....,(i_s,j_s)\},|S^*|=s\\
+&设算法遍历的点集合为P =  \{(x_1,y_1),....,(x_p,y_p)\},|P|=p\\
+&那么:P \subset S 且 (i^*,j^*)∈P.\\
+&由于打字麻烦,就不写了
+\end{align}</script>
     </article>
+    <!-- license  -->
     
     <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/12/26/lost_sale/" title="Lost Sale模型对偶问题的显式解">
+                    <div class="prevTitle">Lost Sale模型对偶问题的显式解</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
     
+    
+<div id="container"></div>
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script> 
+<script>
+    var gitment = new Gitment({
+        // id:  md5(window.location.pathname), // 可选。默认为 location.href
+        owner: 'skydownacai',
+        repo: 'comments',
+        oauth: {
+            client_id: 'ba32b9111050e797f1c9',
+            client_secret: '23c7772fced9840165a3e588cb81134928c56355',
+        },
+    })
+    gitment.render('container')
+
+</script>
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
 </main>
             <!-- profile -->
             
@@ -464,6 +597,24 @@
 </footer>
     </div>
     <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#题目"><span class="toc-number">2.</span> <span class="toc-text">题目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">3.</span> <span class="toc-text">代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-number">4.</span> <span class="toc-text">思路</span></a></li></ol>
+    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -680,6 +831,8 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
      
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -695,7 +848,7 @@ jsonContent:
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
 
