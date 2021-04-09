@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="John Doe">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="John Doe">
+    
+    <meta name="keywords" content="skydownacai,machine learing,机器学习,个人博客,数学,math">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>卡尔曼滤波(Kalman filter) · Repository of skydownacai</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/small.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+    
+        <body class="post-body">
+    
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Skydownacai</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">卡尔曼滤波(Kalman filter)</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Skydownacai</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            卡尔曼滤波(Kalman filter)
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "笔记">笔记</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "统计">统计</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "随机过程">随机过程</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">5.9k</span>阅读时长: <span class="post-count reading-time">33 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2021/04/09</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p><center><h1>
+  卡尔曼滤波
+</h1><center></center></center></p>
+<h3 id="1-模型定义"><a href="#1-模型定义" class="headerlink" title="1. 模型定义"></a>1. 模型定义</h3><p>在一个线性系统中，如果观测序列$\left{z_t\right}$,是由对应时刻的内部状态值$\left{x_t\right}$和可观测的控制变量$\left{u_t\right}$决定,并且受到噪音的干扰,内部状态值由之前时刻的内部状态值决定,并且也受到噪音干扰，那么如何在得到观测值之后,去除噪声,对内部状态值进行推测? 具体来讲，即:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\boldsymbol{x}_{\boldsymbol{t}}=\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}-1}+\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{\varepsilon }_{\boldsymbol{t}}\quad \boldsymbol{\varepsilon }_{\boldsymbol{t}}\sim \boldsymbol{N}\left( 0,\boldsymbol{R}_{\boldsymbol{t}} \right) 
+\\
+&\boldsymbol{z}_{\boldsymbol{t}}=\boldsymbol{C}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}}+\boldsymbol{d}_{\boldsymbol{t}}+\boldsymbol{\delta }_{\boldsymbol{t}}\quad\boldsymbol{\delta }_{\boldsymbol{t}}\sim \boldsymbol{N}\left( 0,\boldsymbol{Q}_{\boldsymbol{t}} \right) 
+\\
+&\boldsymbol{x}_1\sim \boldsymbol{N}\left( \boldsymbol{\mu },\boldsymbol{\varSigma } \right) 
+\\
+&
+\text{求解}:\underset{\mathbf{update}}{\underbrace{\boldsymbol{x}_{\boldsymbol{t}}|\left( \boldsymbol{z}_{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}\text{与}\underset{\mathbf{predict}}{\underbrace{\boldsymbol{x}_{\boldsymbol{t}}|\left( \boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}\text{的条件分布}
+\end{align}</script><p><strong>其中:</strong></p>
+<p> $<br>\boldsymbol{x}<em>{\boldsymbol{t}}|\left( \boldsymbol{z}</em>{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right)<br>$表示我们在得到上一时刻的观测值和当前时刻的控制信息后，对内部状态的分布进行<strong>预测</strong>。</p>
+<p>$\boldsymbol{x}<em>{\boldsymbol{t}}|\left( \boldsymbol{z}</em>{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}} \right)$     表示我们在得到当前时刻的观测值和当前时刻的控制信息后，对内部状态的分布进行<strong>推断</strong>。</p>
+<p>这个模型的求解结果: </p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{x}_{\boldsymbol{t}}|(\boldsymbol{z}_{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}})&\sim \boldsymbol{N}\left( \boldsymbol{\mu }_{\boldsymbol{t}},\boldsymbol{\varSigma }_{\boldsymbol{t}} \right)
+\\
+
+\boldsymbol{x}_{\boldsymbol{t}}|\left( \boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right)& \sim \boldsymbol{N}\left( \widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}, \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}} \right) 
+\end{align}</script><p>其中,参数求解满足迭代过程：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}=\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\\
+&\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}=\boldsymbol{R}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}
+\\
+&\boldsymbol{K}_{\boldsymbol{t}}=\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}
+\\
+&\boldsymbol{\mu }_{\boldsymbol{t}}=\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{K}_{\boldsymbol{t}}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) 
+\\
+&\boldsymbol{\varSigma }_{\boldsymbol{t}}=\left( \boldsymbol{I}-\boldsymbol{K}_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}} \right) \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}
+\end{align}</script><h3 id="2-模型求解思路"><a href="#2-模型求解思路" class="headerlink" title="2. 模型求解思路"></a>2. 模型求解思路</h3><p>我们首先定义, $<br>\boldsymbol{x}<em>{\boldsymbol{t}}|\left( \boldsymbol{z}</em>{1:\boldsymbol{t}},\boldsymbol{u}<em>{1:\boldsymbol{t}} \right)<br>$的条件密度函数为$b(x_t)$,  $\boldsymbol{x}</em>{\boldsymbol{t}}|\left( \boldsymbol{z}<em>{1:\boldsymbol{t}},\boldsymbol{u}</em>{1:\boldsymbol{t}-1} \right)$的条件密度函数为$\widehat{b}(x_t)$</p>
+<p>首先根据贝叶斯公式:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{b}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) &=\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{z}_{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}} \right) =\underset{\text{与}\boldsymbol{x}_{\boldsymbol{t}}\text{无关},\text{当成常数项}}{\underbrace{\frac{1}{\boldsymbol{p}\left( \boldsymbol{z}_{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}} \right)}}}\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}},\boldsymbol{z}_{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}} \right) 
+\\
+&=\propto  \boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}},\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{z}_{\boldsymbol{t},}\boldsymbol{u}_{1:\boldsymbol{t}} \right) 
+\\
+&=\propto  \underset{\begin{array}{c}
+    \text{在我们的模型里面},\\
+    \text{一旦确定了}\boldsymbol{x}_{\boldsymbol{t}},\text{就确定了}\boldsymbol{z}_{\boldsymbol{t}}\\
+    \text{因此此时}\boldsymbol{z}_{1:\boldsymbol{t}-1}\text{与}\boldsymbol{u}_{1:\boldsymbol{t}}\text{对}\boldsymbol{x}_{\boldsymbol{t}}\text{不影响}\\
+\end{array}}{\underbrace{\boldsymbol{p}\left( \boldsymbol{z}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}},\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}},\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) 
+\\
+&=\propto  \boldsymbol{p}\left( \boldsymbol{z}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}} \right) \underset{\text{其实就是}\widehat{\boldsymbol{b}}\left( \boldsymbol{x}_{\boldsymbol{t}} \right)}{\underbrace{\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}\underset{\text{与}\boldsymbol{x}_{\boldsymbol{t}}\text{无关},\text{当成常数项}}{\underbrace{\boldsymbol{p}\left( \boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}
+\\
+&=\propto \boldsymbol{p}\left( \boldsymbol{z}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}} \right) \widehat{\boldsymbol{b}}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) 
+\end{align}</script><p>我们可以看到,这个公式实际上是说，我们在得到当前时刻的观测值之后，对内部状态的值的分布做出的推断，实际上是可以基于</p>
+<p>上一时刻的预测分布进行调整后得到。</p>
+<p>我们进一步可以通过贝叶斯公式得到:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\widehat{\boldsymbol{b}}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) &=\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) =\int_{\boldsymbol{R}^{\boldsymbol{d}}}{\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}},\boldsymbol{x}_{\boldsymbol{t}-1}|\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) \boldsymbol{dx}_{\boldsymbol{t}-1}}
+\\
+&=\int_{\boldsymbol{R}^{\boldsymbol{d}}}{\underset{\text{在我们的模型里},\boldsymbol{x}_{\boldsymbol{t}}\text{由}\boldsymbol{x}_{\boldsymbol{t}-1}\text{于}\boldsymbol{u}_{\boldsymbol{t}}\text{决定}}{\underbrace{\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}-1},\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}\cdot \underset{\boldsymbol{x}_{\boldsymbol{t}-1}\text{肯定不会受到下时刻}\boldsymbol{u}_{\boldsymbol{t}}\text{的影响}}{\underbrace{\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}-1}|\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}} \right) }}\boldsymbol{dx}_{\boldsymbol{t}-1}}
+\\
+&=\int_{\boldsymbol{R}^{\boldsymbol{d}}}{\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}-1},\boldsymbol{u}_{\boldsymbol{t}} \right) \boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}-1}|\boldsymbol{z}_{1:\boldsymbol{t}-1},\boldsymbol{u}_{1:\boldsymbol{t}-1} \right) \boldsymbol{dx}_{\boldsymbol{t}-1}}
+\\
+&=\int_{\boldsymbol{R}^{\boldsymbol{d}}}{\underset{\sim \boldsymbol{N}\left( \boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}-1}+\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}},\boldsymbol{R}_{\boldsymbol{t}} \right)}{\underbrace{\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}-1},\boldsymbol{u}_{\boldsymbol{t}} \right) }}\cdot \underset{\sim \boldsymbol{N}\left( \boldsymbol{\mu }_{\boldsymbol{t}-1},\boldsymbol{\varSigma }_{\boldsymbol{t}-1} \right)}{\underbrace{\boldsymbol{b}\left( \boldsymbol{x}_{\boldsymbol{t}-1} \right) }}\boldsymbol{dx}_{\boldsymbol{t}-1}}
+\end{align}</script><p>最后一个等号决定了,如果我们的模型里面是高斯噪音，且若$b(x<em>{t-1})$是正态分布，那么$\widehat{b}(x_t)$是正态分布,那么$b(x_t)$是正态分布，那么我们如果能得到模型参数的递推公式,那么我们就可以很快的得到任意时刻的$<br>\boldsymbol{x}</em>{\boldsymbol{t}}|\left( \boldsymbol{z}<em>{1:\boldsymbol{t}-1},\boldsymbol{u}</em>{1:\boldsymbol{t}} \right)<br>$与$\boldsymbol{x}<em>{\boldsymbol{t}}|\left( \boldsymbol{z}</em>{1:\boldsymbol{t}},\boldsymbol{u}_{1:\boldsymbol{t}} \right)$ 的分布。这就是卡尔曼滤波求解的关键, 下面通过数学推导来获得迭代公式。</p>
+<h3 id="3-数学推导"><a href="#3-数学推导" class="headerlink" title="3. 数学推导"></a>3. 数学推导</h3><p>根据上面的说明,我们知道$b(x<em>t)$基于$\widehat{b}(x_t)$,$\widehat{b}(x_t)$又基于$b(x</em>{t-1})$。类似于数学归纳法,我们首先假设我们已经知道$b(x_{t-1})$，那么我们首先求解$\widehat{b}(x_t)$, 然后再得到$b(x_t)$，于是便获得了迭代公式。</p>
+<p>首先注意到:</p>
+<script type="math/tex; mode=display">
+\boldsymbol{p}\left( \boldsymbol{x}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}-1},\boldsymbol{u}_{\boldsymbol{t}} \right) =|2\boldsymbol{\pi R}_{\boldsymbol{t}}|^{-\frac{1}{2}}\exp \left\{ -\frac{1}{2}\left( \boldsymbol{x}_{\boldsymbol{t}}-\left( \boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}-1}+\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) \right) ^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{x}_{\boldsymbol{t}}-\left( \boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}-1}+\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) \right) \right\}</script><p>与:</p>
+<script type="math/tex; mode=display">
+\boldsymbol{b}\left( \boldsymbol{x}_{\boldsymbol{t}-1} \right) =|2\boldsymbol{\pi \varSigma }_{\boldsymbol{t}-1}|^{-\frac{1}{2}}\exp \left\{ -\frac{1}{2}\left( \boldsymbol{x}_{\boldsymbol{t}-1}-\boldsymbol{\mu }_{\boldsymbol{t}-1} \right) ^{\boldsymbol{T}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\left( \boldsymbol{x}_{\boldsymbol{t}-1}-\boldsymbol{\mu }_{\boldsymbol{t}-1} \right) \right\}</script><p>代入$\widehat{b}(x_t)$有:</p>
+<script type="math/tex; mode=display">
+\widehat{\boldsymbol{b}}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) =\left( |2\boldsymbol{\pi R}_{\boldsymbol{t}}||2\boldsymbol{\pi \varSigma }_{\boldsymbol{t}-1}| \right) ^{-\frac{1}{2}}\int_{\boldsymbol{R}^{\boldsymbol{d}}}{\exp \left\{ -\frac{1}{2}\boldsymbol{L} \right\} \boldsymbol{dv}}</script><p>其中$\boldsymbol{L}$满足:</p>
+<script type="math/tex; mode=display">
+\boldsymbol{L}=\left( \boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{v}+\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}-\boldsymbol{x}_{\boldsymbol{t}} \right) ^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{v}+\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}-\boldsymbol{x}_{\boldsymbol{t}} \right) +\left( \boldsymbol{v}-\boldsymbol{\mu }_{\boldsymbol{t}-1} \right) ^{\boldsymbol{T}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\left( \boldsymbol{v}-\boldsymbol{\mu }_{\boldsymbol{t}-1} \right)</script><p><strong>我们注意到$\boldsymbol{L}$里面是关于$x<em>t$与$x</em>{t-1}$的二次。如果我们把exp上的指数部分, 表示成关于$x_{t-1}$的正态分布密度函数的形式,那么我们可以根据正态密度函数的性质，把积分号去掉,然后把剩下$x_t$的二次型拿出来，也化成正态分布密度函数的形式,那么我们就得到了$\widehat{b}(x_t)$的分布。</strong></p>
+<p>注意到:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\boldsymbol{L}=\boldsymbol{x}_{\boldsymbol{t}-1}^{\boldsymbol{T}}\left( \boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}+\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1} \right) \boldsymbol{x}_{\boldsymbol{t}-1}-2\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}-\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}-\boldsymbol{x}_{\boldsymbol{t}} \right) \right) ^{\boldsymbol{T}}\boldsymbol{x}_{\boldsymbol{t}-1}
+\\
+&\qquad +\left( \boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}-\boldsymbol{x}_{\boldsymbol{t}} \right) ^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}-\boldsymbol{x}_{\boldsymbol{t}} \right) +\boldsymbol{\mu }_{\boldsymbol{t}-1}^{\boldsymbol{T}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\end{align}</script><p>于是</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\frac{\partial \boldsymbol{L}}{\partial \boldsymbol{x}_{\boldsymbol{t}-1}}=2\left( \boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}+\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1} \right) \boldsymbol{x}_{\boldsymbol{t}-1}-2\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}-\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}-\boldsymbol{x}_{\boldsymbol{t}} \right) \right) ^{\boldsymbol{T}}
+\\
+&\frac{\partial ^2\boldsymbol{L}}{\partial \boldsymbol{x}_{\boldsymbol{t}-1}^{2}}=2\left( \boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}+\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1} \right)
+\xlongequal{\Delta}2\mathbf{\Psi }
+
+
+\end{align}</script><p>我们令$\frac{\partial \boldsymbol{L}}{\partial \boldsymbol{x}_{\boldsymbol{t}-1}}=0$,得:</p>
+<script type="math/tex; mode=display">
+\boldsymbol{x}_{\boldsymbol{t}-1}^{*}=\mathbf{\Psi }^{-1}\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}+\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{x}_{\boldsymbol{t}}-\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) \right)</script><p>从而$\boldsymbol{L}$可以分解成:</p>
+<script type="math/tex; mode=display">
+\boldsymbol{L}=\left( \boldsymbol{x}_{\boldsymbol{t}-1}-\boldsymbol{x}_{\boldsymbol{t}-1}^{*} \right) ^{\boldsymbol{T}}\mathbf{\Psi }\left( \boldsymbol{x}_{\boldsymbol{t}-1}-\boldsymbol{x}_{\boldsymbol{t}-1}^{*} \right) +\underset{\text{关于}\boldsymbol{x}_{\boldsymbol{t}}\text{的二次}}{\underbrace{\boldsymbol{\varPhi }\left( \boldsymbol{x}_{\boldsymbol{t}} \right) }}</script><p>从而：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\widehat{\boldsymbol{b}}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) &=\left( |2\boldsymbol{\pi R}_{\boldsymbol{t}}||2\boldsymbol{\pi \varSigma }_{\boldsymbol{t}-1}| \right) ^{-\frac{1}{2}}\exp \left\{ -\frac{1}{2}\boldsymbol{\varPhi }\left( \boldsymbol{x}_{\boldsymbol{t}} \right) \right\} \underset{\text{某个关于}\mathbf{\Psi }\text{的值}}{\underbrace{\int_{\boldsymbol{R}^{\boldsymbol{d}}}{\exp \left\{ -\frac{1}{2}\left( \boldsymbol{x}_{\boldsymbol{t}-1}-\boldsymbol{x}_{\boldsymbol{t}-1}^{*} \right) ^{\boldsymbol{T}}\mathbf{\Psi }\left( \boldsymbol{x}_{\boldsymbol{t}-1}-\boldsymbol{x}_{\boldsymbol{t}-1}^{*} \right) \right\} \boldsymbol{dx}_{\boldsymbol{t}-1}}}}
+\\
+&\propto \exp \left\{ -\frac{1}{2}\boldsymbol{\varPhi }\left( \boldsymbol{x}_{\boldsymbol{t}} \right) \right\}
+\end{align}</script><p><strong>即$\widehat{b}(x<em>t)$的分布是多维正态分布,且均值向量和协方差矩阵由$\boldsymbol{\varPhi }\left( \boldsymbol{x}</em>{\boldsymbol{t}} \right)$ 关于$x<em>t$的梯度和hesse矩阵决定,并且$\boldsymbol{\varPhi }\left( \boldsymbol{x}</em>{\boldsymbol{t}} \right)$ 实际上是在$\boldsymbol{L}$中令$\boldsymbol{x}<em>{t}=\boldsymbol{x}</em>{\boldsymbol{t}-1}^{*}$时得到,因此我们可以计算出:</strong></p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{\varPhi }\left( \boldsymbol{x}_{\boldsymbol{t}} \right) &=\boldsymbol{x}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) \boldsymbol{x}_{\boldsymbol{t}}-2\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}-\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) \right) ^{\boldsymbol{T}}\boldsymbol{x}_{\boldsymbol{t}}
+\\
+&-\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}-\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) ^{\boldsymbol{T}}\mathbf{\Psi }^{-1}\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}-\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) +\left( \boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) ^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{\mu }_{\boldsymbol{t}-1}^{\boldsymbol{T}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\end{align}</script><p>从而:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{\partial \boldsymbol{\varPhi }\left( \boldsymbol{x}_{\boldsymbol{t}} \right)}{\partial \boldsymbol{x}_{\boldsymbol{t}}}&=2\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) \boldsymbol{x}_{\boldsymbol{t}}-2\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}-\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) \right) 
+\\
+\,\,          &=2\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) \left( \boldsymbol{x}_{\boldsymbol{t}}-\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}} \right) -2\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\\
+\frac{\partial ^2\boldsymbol{\varPhi }\left( \boldsymbol{x}_{\boldsymbol{t}} \right)}{\partial \boldsymbol{x}_{\boldsymbol{t}}^{2}}&=2\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) =2\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}
+\end{align}</script><p>从而:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}&=\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) ^{-1}
+\\
+&=\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}+\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}} \right) ^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) ^{-1}
+\end{align}</script><p><strong>实际上，要求解这个逆矩阵,如果你不知道舒尔补和舒尔补的逆矩阵公式的话,很难求出来。下面我们介绍舒尔补的逆公式:</strong></p>
+<p>对于R,P是任意的可逆矩阵，P是任意一个矩阵，那么成立:</p>
+<script type="math/tex; mode=display">
+\left( \boldsymbol{R}+\boldsymbol{PQP}^{\boldsymbol{T}} \right) ^{-1}=\boldsymbol{R}^{-1}-\boldsymbol{R}^{-1}\boldsymbol{P}\left( \boldsymbol{P}^{\boldsymbol{T}}\boldsymbol{R}^{-1}\boldsymbol{P}+\boldsymbol{Q}^{-1} \right) ^{-1}\boldsymbol{P}^{\boldsymbol{T}}\boldsymbol{R}^{-1}</script><p>我们将这个定理与上面求解$<br>\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}<br>$的式子对应起来就可以得到:</p>
+<script type="math/tex; mode=display">
+\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}=\boldsymbol{R}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}</script><p>我们再令$\frac{\partial \boldsymbol{\varPhi }\left( \boldsymbol{x}<em>{\boldsymbol{t}} \right)}{\partial \boldsymbol{x}</em>{\boldsymbol{t}}}=0$得到:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}&=\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\left( \boldsymbol{R}_{\boldsymbol{t}}^{-1}-\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1} \right) ^{-1}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}\mathbf{\Psi }^{-1}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\\
+&=\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\underset{\text{这两个结合}}{\underbrace{\left( \boldsymbol{R}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) \boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}}}}\underset{\text{这两个结合}}{\underbrace{\left( \boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}+\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}} \right) ^{-1}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}^{-1}}}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\\
+&=\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\left( \boldsymbol{A}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}} \right) \left( \boldsymbol{I}+\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}} \right) ^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\\
+&=\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\left( \boldsymbol{I}+\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}} \right) \left( \boldsymbol{I}+\boldsymbol{\varSigma }_{\boldsymbol{t}-1}\boldsymbol{A}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{R}_{\boldsymbol{t}}^{-1}\boldsymbol{A}_{\boldsymbol{t}} \right) ^{-1}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\\
+\,\,  &=\boldsymbol{B}_{\boldsymbol{t}}\boldsymbol{u}_{\boldsymbol{t}}+\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{\mu }_{\boldsymbol{t}-1}
+\end{align}</script><p>到这里我们就求解出了即$\widehat{b}(x_t)$的分布。下面我们继续求解$b(x_t)$的分布。我们再次回顾到最开始的贝叶斯分解:</p>
+<script type="math/tex; mode=display">
+\boldsymbol{b}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) =\propto \underset{\sim \boldsymbol{N}\left( \boldsymbol{C}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}}+\boldsymbol{d}_{\boldsymbol{t}},\boldsymbol{Q}_{\boldsymbol{t}} \right)}{\underbrace{\boldsymbol{p}\left( \boldsymbol{z}_{\boldsymbol{t}}|\boldsymbol{x}_{\boldsymbol{t}} \right) }}\underset{\sim \boldsymbol{N}\left( \widehat{\boldsymbol{\mu }_{\boldsymbol{t}}},\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}} \right)}{\underbrace{\widehat{\boldsymbol{b}}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) }}</script><p>$b(x_t)$<strong>正比于正态分布密度函数的乘积, 因此$b(x_t)$也是正太分布。因此我们可以类似于求解$\widehat{b}(x_t)$的分布,找到exp的指数上关于$x_t$的梯度和Hesse矩阵,便可以计算出对应分布的均值向量和协方差矩阵。代入对应的密度函数，我们可以都得到:</strong></p>
+<script type="math/tex; mode=display">
+\boldsymbol{b}\left( \boldsymbol{x}_{\boldsymbol{t}} \right) =\propto  \exp \left\{ -\frac{1}{2}\boldsymbol{W} \right\}</script><p>其中:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{W}&=\left( \boldsymbol{C}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}}+\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{z}_{\boldsymbol{t}} \right) ^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{C}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}}+\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{z}_{\boldsymbol{t}} \right) +\left( \boldsymbol{x}_{\boldsymbol{t}}-\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) ^{\boldsymbol{T}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\left( \boldsymbol{x}_{\boldsymbol{t}}-\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) 
+\\
+&=\boldsymbol{x}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) \boldsymbol{x}_{\boldsymbol{t}}-2\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}} \right) \right) \boldsymbol{x}_{\boldsymbol{t}}+\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}^{\boldsymbol{T}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}} \right) ^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}} \right) 
+\\
+\end{align}</script><p>我们求$\boldsymbol{W}$求梯度和Hesse矩阵得:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{\partial \boldsymbol{W}}{\partial \boldsymbol{x}_{\boldsymbol{t}}}&=2\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) \boldsymbol{x}_{\boldsymbol{t}}-2\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}} \right) \right) 
+\\
+\frac{\partial ^2\boldsymbol{W}}{\partial \boldsymbol{x}_{\boldsymbol{t}}^{2}}&=2\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) =2\boldsymbol{\varSigma }_{\boldsymbol{t}}^{-1}
+\end{align}</script><p><strong>于是再次利用舒尔补的逆矩阵我们可以求解出协方差矩阵的表达式:</strong></p>
+<script type="math/tex; mode=display">
+\boldsymbol{\varSigma }_{\boldsymbol{t}}=\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) ^{-1}=\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}-\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}</script><p><strong>注意到参数$\boldsymbol{\mu}_{t}$ 是使得$\boldsymbol{W}$的梯度为0向量的值，于是有:</strong></p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) \boldsymbol{\mu }_{\boldsymbol{t}}=\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}} \right) 
+\\
+&\Leftrightarrow \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\left( \boldsymbol{\mu }_{\boldsymbol{t}}-\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) =\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\boldsymbol{\mu }_{\boldsymbol{t}} \right) 
+\\
+&\qquad \qquad \quad \quad \quad =\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}-\boldsymbol{C}_{\boldsymbol{t}}\boldsymbol{\mu }_{\boldsymbol{t}} \right) 
+\\
+&\qquad \qquad \quad \quad \quad =\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) +\left( \boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) \left( \widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}-\boldsymbol{\mu }_{\boldsymbol{t}} \right) 
+\\
+&\Leftrightarrow \left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) \left( \boldsymbol{\mu }_{\boldsymbol{t}}-\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) =\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right)
+\end{align}</script><p>于是我们可以求解出:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{\mu }_{\boldsymbol{t}}&=\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) ^{-1}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) 
+\\
+&=\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{\varSigma }_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) 
+\\
+&=\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}}+\boldsymbol{K}_{\boldsymbol{t}}\left( \boldsymbol{z}_{\boldsymbol{t}}-\boldsymbol{d}_{\boldsymbol{t}}-\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\mu }_{\boldsymbol{t}}} \right) \,\,\left( \boldsymbol{K}_{\boldsymbol{t}}=\boldsymbol{\varSigma }_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1} \right)
+\end{align}</script><p>这里有个比较有趣的事实是:</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{K}_{\boldsymbol{t}}&=\boldsymbol{\varSigma }_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}
+\\
+&=\boldsymbol{\varSigma }_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) \left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}
+\\
+&=\boldsymbol{\varSigma }_{\boldsymbol{t}}\left( \boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) \left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}
+\\
+&=\boldsymbol{\varSigma }_{\boldsymbol{t}}\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) \left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}
+\\
+&=\boldsymbol{\varSigma }_{\boldsymbol{t}}\underset{\text{恰好就是}\boldsymbol{\varSigma }_{\boldsymbol{t}}^{-1}}{\underbrace{\left( \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}^{-1}+\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\boldsymbol{Q}_{\boldsymbol{t}}^{-1}\boldsymbol{C}_{\boldsymbol{t}} \right) }}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}
+\\
+&=\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}
+\end{align}</script><p><strong>注意到$\boldsymbol{K}_t$其实就是协方差矩阵里面的一项,因此我们可以重写改写$\boldsymbol{\Sigma}_t$的结果即:</strong></p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{\varSigma }_{\boldsymbol{t}}&=\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}-\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}}\left( \boldsymbol{Q}_{\boldsymbol{t}}+\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}\boldsymbol{C}_{\boldsymbol{t}}^{\boldsymbol{T}} \right) ^{-1}\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}
+\\
+&=\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}-\boldsymbol{K}_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}}\widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}
+\\
+&=\left( \boldsymbol{I}-\boldsymbol{K}_{\boldsymbol{t}}\boldsymbol{C}_{\boldsymbol{t}} \right) \widehat{\boldsymbol{\varSigma }_{\boldsymbol{t}}}
+\end{align}</script>
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2020/03/15/%E8%BF%91%E4%BC%BC%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/" title= "近似梯度下降法">
+                    <div class="prevTitle">近似梯度下降法</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+<div id="container"></div>
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script> 
+<script>
+    var gitment = new Gitment({
+        // id:  md5(window.location.pathname), // 可选。默认为 location.href
+        owner: 'skydownacai',
+        repo: 'comments',
+        oauth: {
+            client_id: 'ba32b9111050e797f1c9',
+            client_secret: '23c7772fced9840165a3e588cb81134928c56355',
+        },
+    })
+    gitment.render('container')
+
+</script>
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:932997367@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/skydownacai" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/qr.png" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#"><span class="toc-number">1.</span> <span class="toc-text">
+  卡尔曼滤波
+</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-模型定义"><span class="toc-number">1.0.1.</span> <span class="toc-text">1. 模型定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-模型求解思路"><span class="toc-number">1.0.2.</span> <span class="toc-text">2. 模型求解思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-数学推导"><span class="toc-number">1.0.3.</span> <span class="toc-text">3. 数学推导</span></a></li></ol></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 24
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2021 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span><a class="archive-post-title" href= "/2021/04/09/Kalman-filter/" >卡尔曼滤波(Kalman filter)</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E6%A0%87%E9%87%8F%E5%AF%B9%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC/" >标量对矩阵求导</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E5%A6%82%E4%BD%95%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/" >如何训练一个神经网络</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/strong-duality/" >strong-duality</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E8%BF%91%E4%BC%BC%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/" >近似梯度下降法</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E9%9A%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E6%A8%A1%E5%9E%8B/" >隐马尔可夫模型</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/" >梯度下降法</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/bandit-algorithm/" >bandit_algorithm</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/" >强化学习之马尔可夫决策过程(MDP)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/fisher-information/" >fisher_information</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/nlp/" >nlp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/kkt/" >kkt</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/dual/" >dual</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/constrainted-optimization/" >constrainted optimization</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/SGD/" >SGD</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/pca/" >pca理论推导</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/gmm/" >Gaussian Mixture Model 理论推导</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/SVM/" >SVM理论推导</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/2020/03/15/%E7%89%9B%E9%A1%BF%E6%B3%95/" >牛顿法</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/10</span><a class="archive-post-title" href= "/2020/03/10/Max-Area/" >Leetcode Q11.[盛最多水的容器] 算法与数学证明</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/26</span><a class="archive-post-title" href= "/2018/12/26/lost_sale/" >Lost Sale模型对偶问题的显式解</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href= "/2018/12/24/bp%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B8%8E%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97%E5%AE%9E%E4%BE%8B/" >bp算法与手写数字识别代码</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href= "/2018/12/23/SVM1/" >SVM[一]:最大间隔分离超平面与线性可分支持向量机</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href= "/2018/12/23/%E5%86%99%E5%9C%A8%E9%A6%96%E9%A1%B5/" >写在首页：用这个博客记录自己的学习历程</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="双指针法"><span class="iconfont-archer">&#xe606;</span>双指针法</span>
+    
+        <span class="sidebar-tag-name" data-tags="O(n)"><span class="iconfont-archer">&#xe606;</span>O(n)</span>
+    
+        <span class="sidebar-tag-name" data-tags="leetcode"><span class="iconfont-archer">&#xe606;</span>leetcode</span>
+    
+        <span class="sidebar-tag-name" data-tags="myself"><span class="iconfont-archer">&#xe606;</span>myself</span>
+    
+        <span class="sidebar-tag-name" data-tags="sufe"><span class="iconfont-archer">&#xe606;</span>sufe</span>
+    
+        <span class="sidebar-tag-name" data-tags="线性可分支持向量机"><span class="iconfont-archer">&#xe606;</span>线性可分支持向量机</span>
+    
+        <span class="sidebar-tag-name" data-tags="最大间隔分离超平面"><span class="iconfont-archer">&#xe606;</span>最大间隔分离超平面</span>
+    
+        <span class="sidebar-tag-name" data-tags="线性规划"><span class="iconfont-archer">&#xe606;</span>线性规划</span>
+    
+        <span class="sidebar-tag-name" data-tags="随机规划"><span class="iconfont-archer">&#xe606;</span>随机规划</span>
+    
+        <span class="sidebar-tag-name" data-tags="对偶问题"><span class="iconfont-archer">&#xe606;</span>对偶问题</span>
+    
+        <span class="sidebar-tag-name" data-tags="神经网络"><span class="iconfont-archer">&#xe606;</span>神经网络</span>
+    
+        <span class="sidebar-tag-name" data-tags="bp算法"><span class="iconfont-archer">&#xe606;</span>bp算法</span>
+    
+        <span class="sidebar-tag-name" data-tags="手写数字识别"><span class="iconfont-archer">&#xe606;</span>手写数字识别</span>
+    
+        <span class="sidebar-tag-name" data-tags="笔记"><span class="iconfont-archer">&#xe606;</span>笔记</span>
+    
+        <span class="sidebar-tag-name" data-tags="强化学习"><span class="iconfont-archer">&#xe606;</span>强化学习</span>
+    
+        <span class="sidebar-tag-name" data-tags="bandit algorithm"><span class="iconfont-archer">&#xe606;</span>bandit algorithm</span>
+    
+        <span class="sidebar-tag-name" data-tags="机器学习"><span class="iconfont-archer">&#xe606;</span>机器学习</span>
+    
+        <span class="sidebar-tag-name" data-tags="svm"><span class="iconfont-archer">&#xe606;</span>svm</span>
+    
+        <span class="sidebar-tag-name" data-tags="统计"><span class="iconfont-archer">&#xe606;</span>统计</span>
+    
+        <span class="sidebar-tag-name" data-tags="费雪信息"><span class="iconfont-archer">&#xe606;</span>费雪信息</span>
+    
+        <span class="sidebar-tag-name" data-tags="深度学习"><span class="iconfont-archer">&#xe606;</span>深度学习</span>
+    
+        <span class="sidebar-tag-name" data-tags="自然语言处理"><span class="iconfont-archer">&#xe606;</span>自然语言处理</span>
+    
+        <span class="sidebar-tag-name" data-tags="nlp"><span class="iconfont-archer">&#xe606;</span>nlp</span>
+    
+        <span class="sidebar-tag-name" data-tags="pca"><span class="iconfont-archer">&#xe606;</span>pca</span>
+    
+        <span class="sidebar-tag-name" data-tags="求导"><span class="iconfont-archer">&#xe606;</span>求导</span>
+    
+        <span class="sidebar-tag-name" data-tags="MDP"><span class="iconfont-archer">&#xe606;</span>MDP</span>
+    
+        <span class="sidebar-tag-name" data-tags="马尔可夫决策过程"><span class="iconfont-archer">&#xe606;</span>马尔可夫决策过程</span>
+    
+        <span class="sidebar-tag-name" data-tags="gmm"><span class="iconfont-archer">&#xe606;</span>gmm</span>
+    
+        <span class="sidebar-tag-name" data-tags="HMM"><span class="iconfont-archer">&#xe606;</span>HMM</span>
+    
+        <span class="sidebar-tag-name" data-tags="隐马尔可夫模型"><span class="iconfont-archer">&#xe606;</span>隐马尔可夫模型</span>
+    
+        <span class="sidebar-tag-name" data-tags="数学优化"><span class="iconfont-archer">&#xe606;</span>数学优化</span>
+    
+        <span class="sidebar-tag-name" data-tags="sgd"><span class="iconfont-archer">&#xe606;</span>sgd</span>
+    
+        <span class="sidebar-tag-name" data-tags="随机梯度下降法"><span class="iconfont-archer">&#xe606;</span>随机梯度下降法</span>
+    
+        <span class="sidebar-tag-name" data-tags="constrainted_optimization"><span class="iconfont-archer">&#xe606;</span>constrainted_optimization</span>
+    
+        <span class="sidebar-tag-name" data-tags="对偶"><span class="iconfont-archer">&#xe606;</span>对偶</span>
+    
+        <span class="sidebar-tag-name" data-tags="dual"><span class="iconfont-archer">&#xe606;</span>dual</span>
+    
+        <span class="sidebar-tag-name" data-tags="kkt条件"><span class="iconfont-archer">&#xe606;</span>kkt条件</span>
+    
+        <span class="sidebar-tag-name" data-tags="强对偶"><span class="iconfont-archer">&#xe606;</span>强对偶</span>
+    
+        <span class="sidebar-tag-name" data-tags="strong-duality"><span class="iconfont-archer">&#xe606;</span>strong-duality</span>
+    
+        <span class="sidebar-tag-name" data-tags="梯度下降法"><span class="iconfont-archer">&#xe606;</span>梯度下降法</span>
+    
+        <span class="sidebar-tag-name" data-tags="近似梯度下降法"><span class="iconfont-archer">&#xe606;</span>近似梯度下降法</span>
+    
+        <span class="sidebar-tag-name" data-tags="二阶"><span class="iconfont-archer">&#xe606;</span>二阶</span>
+    
+        <span class="sidebar-tag-name" data-tags="牛顿法"><span class="iconfont-archer">&#xe606;</span>牛顿法</span>
+    
+        <span class="sidebar-tag-name" data-tags="随机过程"><span class="iconfont-archer">&#xe606;</span>随机过程</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="算法"><span class="iconfont-archer">&#xe60a;</span>算法</span>
+    
+        <span class="sidebar-category-name" data-categories="MYSELF"><span class="iconfont-archer">&#xe60a;</span>MYSELF</span>
+    
+        <span class="sidebar-category-name" data-categories="SVM"><span class="iconfont-archer">&#xe60a;</span>SVM</span>
+    
+        <span class="sidebar-category-name" data-categories="线性规划"><span class="iconfont-archer">&#xe60a;</span>线性规划</span>
+    
+        <span class="sidebar-category-name" data-categories="神经网络"><span class="iconfont-archer">&#xe60a;</span>神经网络</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "John Doe"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
+
+

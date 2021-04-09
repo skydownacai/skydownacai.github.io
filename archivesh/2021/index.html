@@ -346,27 +346,35 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/2018/12/23/%E5%86%99%E5%9C%A8%E9%A6%96%E9%A1%B5/" >
+        <a class="abstract-title" href = "/2021/04/09/Kalman-filter/" >
             
                 <span class="stick-top iconfont-archer">&#xe63d;</span>
                 
-                <span>写在首页：用这个博客记录自己的学习历程</span>
+                <span>卡尔曼滤波(Kalman filter)</span>
         </a>
         <div class="abstract-content">
-            <p><img src="/2018/12/23/%E5%86%99%E5%9C%A8%E9%A6%96%E9%A1%B5/1.jpg" alt=""></p>
+            
+  卡尔曼滤波
+
+1. 模型定义在一个线性系统中，如果观测序列$\left{z_t\right}$,是由对应时刻的内部状态值$\left{x_t\right}$和可观测的控制变量$\left{u_t\right}$决定,并且受到噪音的干扰,内部状态值由之前时刻的内部状态值决定,并且也受到噪音干扰，那么如何在得到观测值之后,去除噪声,对内部状态值进行推测? 具体来讲，即:
+
+\begin{align}
+&\boldsymbol{x}_{\boldsymbol{t}}=\boldsymbol{A}_{\boldsymbol{t}}\boldsymbol{x}_{\boldsymbol{t}...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/12/23</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/04/09</span>
             </div>
             <!-- tags  -->
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "myself">myself</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "笔记">笔记</a>
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "sufe">sufe</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "统计">统计</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "随机过程">随机过程</a>
     
 </div>
             
